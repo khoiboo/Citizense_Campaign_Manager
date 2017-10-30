@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<!-- Include JS File Here -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	
+	<!-- Include Bootstrap -->
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	
+	<!-- Include D3 pie chart -->
+	<script src="d3pie.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.4/d3.min.js"></script>
+	
+	<!-- Include D3 -->
+	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.4/d3.min.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	
+	<script src="http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyACDJ9mfHcaULVUQ4lirU_onBji-APZ3XQ"></script>
+
+<style type="text/css">
+
+#map {
+        height: 400px;
+        width: 100%;
+       }
+
+body, html {
+  margin: 0;  
+  height:100%;
+}
+
+	.tablestyle{
+		/*width:100%;*/ 
+		border-collapse:collapse; 
+	}
+	.tablestyle td{ 
+		padding:7px; border:#4e95f4 1px solid;
+	}
+	/*  Define the background color for all the ODD background rows  */
+	.tablestyle tr:nth-child(odd){ 
+		background: #b8d1f3;
+	}
+	/*  Define the background color for all the EVEN background rows  */
+	.tablestyle tr:nth-child(even){
+		background: #dae5f4;
+	}
+	.highlight
+	{
+		background:red;
+	}
+	
+	.highlighthover
+	{
+		background:  #26cd77 ;
+	}
+	
+	/*chart style */
+	.chart rect {
+    fill: steelblue;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .axis text {
+    font-size: 12px;
+  }
+
+  .chart .current {
+    fill: green;
+    cursor: pointer;
+  }
+  
+  #dvTable{
+  text-align: center;
+  height:100%;
+  overflow-y: scroll; 
+	}
+	
+	#middleColumn{
+  height:100%;
+  overflow-y: scroll; 
+	}
+</style>
+
+</head>
+
+
+<body>
+<br><br><br>
+ <!--Nav-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="background: #4c8dc7;">
+    <div class="container">
+        <div class="navbar-header">
+            <!--Part of left-->
+            
+            <div id="stepsUserAuth">
+                <a class="navbar-brand" href="http://www.geo-c.eu" title="NavApps">
+                    <img src="transparentCitizense.png" alt="Geo-C" height="30px" style="display: inline">
+                    
+                </a>
+            <span class="navbar-brand steps">                     
+            </span>
+            </div>
+            
+        </div>
+        <!--Part of right-->
+        <div id="navbar" class="navbar-collapse collapse">            
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>
+
+<div id="mainTitle"> </div>
+
+<div id="dvTable" class="col-lg-2">
+
+<br><br>
+
+</div>
+
+<div id="middleColumn" class="col-lg-5" >
+
+
+
+			<!-- Common form -->
+      		<div id="commonForm"  class="specificForm">
+			
+			<form id="commonForm_innerPart" >					   
+			  
+			  <br>
+			  Question Text:<br>  <input type="text" class = "FreeTextSingle_input form-control" id="common_Form_QuesText" ><br>
+			  Image URL:<br>      <input type="text" class = "FreeTextSingle_input form-control" id="common_Form_QuesImage"><br>		  
+			  <br><br>    
+			</form>		
+			</div>
+			
+			<!-- FreeTextSingle form -->
+			<div id="FreeTextSingle_specific" class="specificForm" >			
+			</div>
+			
+			<!-- FreeTextMulti form -->
+			<div id="FreeTextMulti_specific" class="specificForm" >			
+			</div>
+			
+			<!-- MultipleChoiceSingle form -->
+			<div id="MultipleChoiceSingle_specific" class="specificForm" >			
+			</div>
+			
+			<!-- MultipleChoiceMulti form -->
+			<div id="MultipleChoiceMulti_specific" class="specificForm" >			
+			</div>
+			
+			<!-- AudioSensor form -->
+			<div id="AudioSensor_specific" class="specificForm" >			
+			</div>
+			
+			<!-- ContRange form -->
+			<div id="ContRange_specific"  class="specificForm">
+			
+			<b>Minimum value</b> of the range:<br>	<input type="text" class = "ContRange_input form-control" id="ContRange_min"><br> 
+			<b>Maximum value</b> of the range:<br>	<input type="text" class = "ContRange_input form-control" id="ContRange_max"><br>
+						
+			</div>
+			
+			<!-- FreeNumericSingle form -->
+			<div id="FreeNumericSingle_specific">			
+			</div>
+			
+			<div id="map"></div>
+			
+			
+
+</div>
+
+<div id="right" class="col-lg-5">
+
+<br><br>
+
+</div>
+
+</body>
+
+<script type="text/javascript">
+$( document ).ready(function() { 
+	
+	const FreeTextSingle_const = 'FreeTextSingle';
+	const FreeTextMulti_const = 'FreeTextMulti';
+	const MultipleChoiceSingle_const = 'MultipleChoiceSingle';
+	const MultipleChoiceMulti_const = 'MultipleChoiceMulti';
+	const ContRange_const = 'ContRange';
+	const AudioSensor_const = 'AudioSensor';	
+	const TextDisplay_const = 'TextDisplay';
+	const FreeNumericSingle_const = 'FreeNumericSingle';
+	const UploadPhoto_const = 'UploadPhoto';
+	const DateInput_const = 'DateInput';
+	const TimeInput_const = 'TimeInput';
+	const WifiSensor_const = 'WifiSensor';
+	
+	var latValue, longValue;
+	
+    var markerArray = [];
+	
+	var UK = new google.maps.LatLng(39.987452, -0.044553);
+				
+	var myOptions = {
+		zoom: 13,
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		center: UK
+	}
+				
+	var map = new google.maps.Map(document.getElementById("map"), myOptions);
+	
+	
+	
+	
+	
+	function removeMarkers()
+	{
+		for(i=0; i<markerArray.length; i++)
+		{
+			markerArray[i].setMap(null);
+		}
+	}
+	
+	function recursiveGetProp(obj, lookup, callback) {
+	    for (property in obj) {
+	        if (property == lookup) {
+	            callback(obj[property]);
+	        } else if (obj[property] instanceof Object) {
+	            recursiveGetProp(obj[property], lookup, callback);
+	        }
+	    }
+	}
+	
+	function addmarker(latilongi) {
+    var marker = new google.maps.Marker({
+        position: latilongi,
+        title: 'new marker',
+        draggable: false,
+        map: map
+    });
+	
+	console.log(marker.getPosition().lat() + ' - ' + marker.getPosition().lng() );
+
+    var infowindow = new google.maps.InfoWindow({
+        content: '<div id="infodiv2">infowindow!</div>'
+    });
+    //map.setZoom(15);
+    map.setCenter(marker.getPosition())
+    //infowindow.open(map, marker)
+	
+	markerArray.push(marker);
+	}
+	
+	function addMarkerColor(latilongi) {
+    var marker = new google.maps.Marker({
+        position: latilongi,
+        title: 'new marker',
+        draggable: false,
+        map: map		
+    });
+	marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+
+    var infowindow = new google.maps.InfoWindow({
+        content: '<div id="infodiv2">infowindow!</div>'
+    });
+    //map.setZoom(15);
+    map.setCenter(marker.getPosition())
+    //infowindow.open(map, marker)
+	
+	markerArray.push(marker);
+	}
+	
+	// Sets the map on all markers in the array.
+      function setMapOnAll(map) {
+        for (var i = 0; i < markerArray.length; i++) {
+          markerArray[i].setMap(map);
+        }
+      }
+
+      // Removes the markers from the map, but keeps them in the array.
+      function clearMarkers() {
+        setMapOnAll(null);
+      }
+
+      // Shows any markers currently in the array.
+      function showMarkers() {
+        setMapOnAll(map);
+      }
+
+      // Deletes all markers in the array by removing references to them.
+      function deleteMarkers() {
+        clearMarkers();
+        markerArray = [];
+      }
+	
+	$('.specificForm').hide();
+	
+	function drawImageScaled(img, ctx) 
+																	{
+																	   var canvas = ctx.canvas ;
+																	   var hRatio = canvas.width  / img.width    ;
+																	   var vRatio =  canvas.height / img.height  ;
+																	   var ratio  = Math.min ( hRatio, vRatio );
+																	   var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
+																	   var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
+																	   ctx.clearRect(0,0,canvas.width, canvas.height);
+																	   ctx.drawImage(img, 0,0, img.width, img.height, centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
+																	}
+	
+	function drawPieChart(dataArray, question) {
+		
+		var pie = new d3pie("right", {
+			"header": {
+				"title": {
+					"text": question,
+					"fontSize": 24,
+					"font": "open sans"
+				},
+				"titleSubtitlePadding": 9
+			},			
+			"size": {
+				"canvasWidth": 590,
+				"pieOuterRadius": "90%"
+			},
+			"data": {
+				"sortOrder": "value-desc",
+				"content": dataArray
+			},
+			"labels": {
+				"outer": {
+					"pieDistance": 32
+				},
+				"inner": {
+					"format": "value"
+				},
+				"mainLabel": {
+					"font": "verdana"
+				},
+				"percentage": {
+					"color": "#e1e1e1",
+					"font": "verdana",
+					"decimalPlaces": 0
+				},
+				"value": {
+					"color": "#e1e1e1",
+					"font": "verdana"
+				},
+				"lines": {
+					"enabled": true,
+					"color": "#cccccc"
+				},
+				"truncation": {
+					"enabled": true
+				}
+			},
+			"effects": {
+				"pullOutSegmentOnClick": {
+					"effect": "linear",
+					"speed": 400,
+					"size": 8
+				}
+			}
+		});		    
+	}
+	
+function drawBarChart(dataArray) {
+	
+		var maxY = 0;		
+		for (var i=0;i< dataArray.length;i++)
+			if (dataArray[i].value > maxY)
+				maxY = dataArray[i].value;
+		console.log('MaxY value is ' + maxY);
+		
+		var svgHeight = 400;
+        var svgWidth = 600;
+        var maxAge = 65; // You can also compute this from the data
+        var barSpacing = 1; // The amount of space you want to keep between the bars
+        var padding = {
+            left: 30, right: 0,
+            top: 20, bottom: 20
+        };
+        
+        function animateBarsUp() {
+            var maxWidth = svgWidth - padding.left - padding.right;
+            var maxHeight = svgHeight - padding.top - padding.bottom;
+
+            // Define your conversion functions
+            var convert = {    
+              x: d3.scale.ordinal(),
+              y: d3.scale.linear()
+            };
+
+            // Define your axis
+            var axis = {
+              x: d3.svg.axis().orient('bottom'),
+              y: d3.svg.axis().orient('left')
+            };
+              
+            // Define the conversion function for the axis points
+            axis.x.scale(convert.x);
+            axis.y.scale(convert.y);
+
+            // Define the output range of your conversion functions
+            convert.y.range([maxHeight, 0]);
+            convert.x.rangeRoundBands([0, maxWidth]);
+              
+            // Once you get your data, compute the domains
+            convert.x.domain(dataArray.map(function (d) {
+                return d.label;
+              })
+            );
+            convert.y.domain([0, maxY]);
+
+            // Setup the markup for your SVG
+            var svg = d3.select('.chart')
+              .attr({
+                  width: svgWidth,
+                  height: svgHeight
+              });
+            
+            // The group node that will contain all the other nodes
+            // that render your chart
+            var chart = svg.append('g')
+              .attr({
+                  transform: function (d, i) {
+                    return 'translate(' + padding.left + ',' + padding.top + ')';
+                  }
+                });
+              
+            chart.append('g') // Container for the axis
+              .attr({
+                class: 'x axis',
+                transform: 'translate(0,' + maxHeight + ')'
+              })
+              .call(axis.x); // Insert an axis inside this node
+
+            chart.append('g') // Container for the axis
+              .attr({
+                class: 'y axis',
+                height: maxHeight
+              })
+              .call(axis.y); // Insert an axis inside this node
+
+            var bars = chart
+              .selectAll('g.bar-group')
+              .data(dataArray)
+              .enter()
+              .append('g') // Container for the each bar
+              .attr({
+                transform: function (d, i) {
+                  return 'translate(' + convert.x(d.label) + ', 0)';
+                },
+                class: 'bar-group'
+              });
+
+            bars.append('rect')
+                  .attr({
+                  y: maxHeight,
+                  height: 0,
+                  width: function(d) {return convert.x.rangeBand(d) - 1;},
+                  class: 'bar'
+              })
+              .transition()
+              .duration(1500)
+              .attr({
+                y: function (d, i) {
+                  return convert.y(d.value);
+                },
+                height: function (d, i) {
+                  return maxHeight - convert.y(d.value);
+                }
+              });
+
+            return chart;
+          }
+
+          animateBarsUp();
+        
+        
+		
+		
+	}
+	
+	//alert('CampaignID is ' + sessionStorage.selection);
+	
+	$.post(			                
+            "readCampaign.php",
+            { 
+            	data: sessionStorage.selection 			                  
+            },
+            function(data) { 		
+            	
+            	document.getElementById("mainTitle").innerHTML = 'This is statistics for campaign ' + sessionStorage.selection;  	
+            	
+				
+            	var answerArrayString = sessionStorage.answerArray;
+            	
+            	console.log('answerArray is ' + answerArrayString);
+            	var answerArray = JSON.parse(answerArrayString);
+            	console.log('Length of answerArray is ' + answerArray.length);   
+				
+                
+               //alert('Return data is ' + data);	
+               var returnData = JSON.parse(data); 
+               
+               var campaignString;
+               
+               recursiveGetProp(returnData, 'campaign_Config', function(obj) 
+            		   {							
+							campaignString = obj;										
+					    });	
+               
+               var campaign = JSON.parse(campaignString);
+               
+               var questionArray = [];
+               questionArray.push(['Tasks of the campaign']);
+               
+               for (var i = 0; i< campaign.Question_Array.length;i++)
+            	   {
+            	   		questionArray.push( [campaign.Question_Array[i].quesID] );
+            	   }
+               
+               //alert(JSON.stringify(questionArray));                       
+               
+             //Create a HTML Table element.
+	       	    var table = document.createElement("TABLE");
+	            table.setAttribute("id","mytable");
+	            table.setAttribute("class", "tablestyle");
+	       	    table.border = "1";
+	       	    
+	       	//Get the count of columns.
+	       	    var columnCount = questionArray[0].length;
+	       	 
+	       	    //Add the header row.
+	       	    var row = table.insertRow(-1);
+	       	    for (var i = 0; i < columnCount; i++) {
+	       	        var headerCell = document.createElement("TH");
+	       	        headerCell.innerHTML = questionArray[0][i];
+	       	        row.appendChild(headerCell);
+	       	    }
+	       	 
+	       	    //Add the data rows.
+	       	    for (var i = 1; i < questionArray.length; i++) {
+	       	        row = table.insertRow(-1);
+	       	        for (var j = 0; j < columnCount; j++) {
+	       	            var cell = row.insertCell(-1);
+	       	            cell.innerHTML = questionArray[i][j];
+	       	        }
+	       	    }
+	       	 
+	       	    var dvTable = document.getElementById("dvTable");
+	       	    //dvTable.innerHTML = "";
+	       	    dvTable.appendChild(table);	
+	       	    
+	       	 var br = document.createElement('br');
+			br.setAttribute("class", "addedContent"); 
+	       	dvTable.appendChild(br);
+	       	dvTable.appendChild(br);
+			
+			var anotherView = document.createElement("input");
+	       	anotherView.setAttribute("id","viewBySubmission");
+	       	anotherView.setAttribute("type","button");
+	       	anotherView.setAttribute("class", "btn btn-success");
+	       	anotherView.setAttribute("value", "View as list of submissions");
+	       	anotherView.onclick = function() 
+			{
+				$('#right').empty();
+				$('.addedContent').remove();
+				br.remove();
+				
+				//alert('Campaign ID is ' + sessionStorage.selection);
+						
+				$('<p class="addedContent"> Lista de resultados</p>').appendTo('#middleColumn');	
+				
+				var TimeArray = [], UserArray = [], StatusArray = [];
+						$.post(			                
+											"readSubmissionGeneral.php",
+												{ 												
+													campaignID: sessionStorage.selection													
+												},
+												function(data) 
+												{
+													
+													//alert(data);
+													var parsedData = JSON.parse(data);
+														recursiveGetProp(parsedData, 'submissionTime', function(obj) 
+														{							
+															TimeArray.push(obj);															
+														});	
+														recursiveGetProp(parsedData, 'userID', function(obj) 
+														{							
+															UserArray.push(obj);															
+														});	
+														/*
+														recursiveGetProp(parsedData, 'status', function(obj) 
+														{							
+															StatusArray.push(obj);															
+														});*/	
+													
+													//alert(JSON.stringify(TimeArray));
+													
+													for (var x=0;x< answerArray.length;x++)
+													{														
+														
+														$('<button id="Submission_' + x +'" class="addedContent"> Submission ' + (x+1) + ' </button>')
+														.click(function(){						
+															
+															$('#right').empty();													
+															
+															var thisButton_ID = $(this).attr('id');
+															//alert(thisButton_ID);
+															var index = thisButton_ID.substring(thisButton_ID.lastIndexOf('_')+1, thisButton_ID.length );
+															//alert(answerArray[index]);
+															var submission = JSON.parse(answerArray[index]);
+															
+															var seqNumber = parseInt(index);
+															$('<p class="addedContent">Resultado #' + (seqNumber+1) +' </p>').appendTo('#right');
+															
+															var array = [];
+															for (var j=0;j< submission.length;j++)
+															{
+																array.push(submission[j].questionType);
+																if ( (submission[j].questionType == 'FreeTextSingle') || (submission[j].questionType == 'MultipleChoiceSingle') || (submission[j].questionType == 'ContRange') || (submission[j].questionType == 'FreeNumericSingle') || (submission[j].questionType == 'DateInput') || (submission[j].questionType == 'TimeInput') )
+																{
+																	//Display task description (Question text)
+																	for (var i=0;i<campaign.Question_Array.length;i++)
+																	{
+																		if (campaign.Question_Array[i].quesID == submission[j].questionID)
+																			{
+																				$('<p class="addedContent"><b>' + campaign.Question_Array[i].quesLabel[0] + '</b></p>').appendTo('#right');
+																			}
+																	}
+																	//Display answer
+																	$('<p>' + submission[j].list[0] + '</p>').appendTo('#right');
+																}
+																else if (submission[j].questionType == 'FreeTextMulti')
+																{
+																	var currentIindex;
+																	//Display task description (Question text)
+																	for (var i=0;i<campaign.Question_Array.length;i++)
+																	{
+																		if (campaign.Question_Array[i].quesID == submission[j].questionID)
+																			{
+																				$('<p class="addedContent"><b>' + campaign.Question_Array[i].quesLabel[0] + '</b></p>').appendTo('#right');
+																				currentIindex = i;
+																			}
+																	}
+																	
+																	//Display answer
+																	for (var k = 0; k < submission[j].list.length; k++ )
+																	{
+																		$('<p>' + campaign.Question_Array[currentIindex].subcomponent[k] + ': ' + submission[j].list[k] + '</p>').appendTo('#right');																		
+																	}
+																	
+																}									
+																else if (submission[j].questionType == 'MultipleChoiceMulti')
+																{
+																	//Display task description (Question text)
+																	for (var i=0;i<campaign.Question_Array.length;i++)
+																	{
+																		if (campaign.Question_Array[i].quesID == submission[j].questionID)
+																			{
+																				$('<p class="addedContent"><b>' + campaign.Question_Array[i].quesLabel[0] + '</b></p>').appendTo('#right');																				
+																			}
+																	}
+																	
+																	//Display answer
+																	for (var k = 0; k < submission[j].list.length; k++ )
+																	{
+																		$('<p>' + submission[j].list[k] + '</p>').appendTo('#right');																		
+																	}
+																	
+																}									
+																else if (submission[j].questionType == 'AudioSensor')
+																{
+																	//Display task description (Question text)
+																	for (var i=0;i<campaign.Question_Array.length;i++)
+																	{
+																		if (campaign.Question_Array[i].quesID == submission[j].questionID)
+																			{
+																				$('<p class="addedContent"><b>' + campaign.Question_Array[i].quesLabel[0] + '</b></p>').appendTo('#right');																				
+																			}
+																	}
+																	
+																	//Display answer
+																	$('<p>Valor mínimo (dB): ' + submission[j].list[0] + '</p>').appendTo('#right');																		
+																	$('<p>Valor promedio (dB): ' + submission[j].list[1] + '</p>').appendTo('#right');																		
+																	$('<p>Valor máximo (dB): ' + submission[j].list[2] + '</p>').appendTo('#right');																		
+																	$('<p>Tiempo de la medición (ms): ' + submission[j].list[3] + '</p>').appendTo('#right');																		
+																	$('<p>Frecuencia de muestreo, cada (ms): ' + submission[j].list[4] + '</p>').appendTo('#right');																		
+																}									
+																else if (submission[j].questionType == 'UploadPhoto')
+																{
+																	//Display task description (Question text)
+																	for (var i=0;i<campaign.Question_Array.length;i++)
+																	{
+																		if (campaign.Question_Array[i].quesID == submission[j].questionID)
+																			{
+																				$('<p class="addedContent"><b>' + campaign.Question_Array[i].quesLabel[0] + '</b></p>').appendTo('#right');
+																			}
+																	}																		
+																	
+																	$('<canvas id="cv_' + x +  '"></canvas>').appendTo('#right');	
+																	$('<p> URL of the original image is: www.citizense.uji.es/Citizense_Test/UserUploadedPic/' + submission[j].list[0] + '.jpg' + '</p>').appendTo('#right');
+																	var canvas=document.getElementById('cv_' + x);
+																	var ctx= canvas.getContext('2d');
+																	
+																	var img = new Image();
+																	img.onload= drawImageScaled.bind(null, img, ctx);																	
+																	img.src = 'UserUploadedPic/' + submission[j].list[0] + '.jpg';																
+																		
+																}	
+																else if  (submission[j].questionType == WifiSensor_const)
+																{
+																	//Display task description (Question text)
+																	for (var i=0;i<campaign.Question_Array.length;i++)
+																	{
+																		if (campaign.Question_Array[i].quesID == submission[j].questionID)
+																			{
+																				$('<p class="addedContent"><b>' + campaign.Question_Array[i].quesLabel[0] + '</b></p>').appendTo('#right');
+																			}
+																	}	
+																
+																	var answerWifiSensor = [];																	
+																	answerWifiSensor.push( ['Network name(SSID)','Signal strength (dBm)','BSSID'] );
+																	
+																	for (var t=0; t < submission[j].list.length;t++)
+																	{
+																		answerWifiSensor.push( submission[j].list[t].SSID , submission[j].list[t].signalStrength , submission[j].list[t].BSSID );
+																	}
+																	
+																	//answerWifiSensor.push([networkList[index].SSID, networkList[index].signalStrength, networkList[index].BSSID]);
+																	//alert( JSON.stringify(submission[j].list) );
+																	
+																}
+															}
+															
+															
+															/*
+															// Display the control for the submission's status
+															if (campaign.followUp == 'true') //Status will be: stored, checked, working, solved, closed, 
+															{
+																$('<p> The current status of this submission is <b>' + StatusArray[seqNumber] + '</b> </p>').appendTo('#right');									
+																
+																$('<p> This campaign allows follow up, please update the new status of this submission (if available)</p>').appendTo('#right');									
+																
+																//$('<select id="status_list"> <option value="1"> Stored </option> <option value="2"> Checked </option>  </select>').appendTo('#right');
+																$('<input type="text" id="status">  </input>').appendTo('#right');
+																
+																$('<button> Update status </button>')
+																.click(function(){						
+																	
+																	if ( $('#status').val() != '' )
+																	{																		
+																		//Update new status for the submission
+																		$.post(			                
+																		"updateNewStatus.php",
+																			{ 
+																				submissionContent: answerArray[index],
+																				campaignID: sessionStorage.selection,
+																				newStatus: $('#status').val()
+																			},
+																			function(data) 
+																			{ 
+																				alert(data);
+																			}
+																		);
+																		
+																		var TrackedSubmissionArray;
+																		
+																		//Update the profile of the participant
+																		$.post(			                
+																		"updateNewStatusParticipant1.php",
+																			{ 
+																				submissionTime: TimeArray[index],
+																				campaignID: sessionStorage.selection,
+																				newStatus: $('#status').val(),
+																				userID: UserArray[index]
+																			},
+																			function(reply) 
+																			{ 																				
+																				var parsedReply = JSON.parse(reply);
+																				recursiveGetProp(parsedReply, 'trackedSubmission', function(obj) 
+																				{																												
+																					TrackedSubmissionArray = obj;
+																				});
+																				
+																				for (var i=0;i< TrackedSubmissionArray.length;i++)
+																				{
+																					if ((TrackedSubmissionArray[i][1] == TimeArray[index]) && (TrackedSubmissionArray[i][0]==sessionStorage.selection))
+																					{																						
+																						var newObject = [];
+																						newObject.push(sessionStorage.selection);
+																						newObject.push(TimeArray[index]);
+																						newObject.push( $('#status').val() );
+																						
+																						TrackedSubmissionArray[i] = newObject;
+																					}
+																				}
+																				
+																				$.post(			                
+																				"updateNewStatusParticipant2.php",
+																					{	
+																						userID: UserArray[index],
+																						newContent: TrackedSubmissionArray
+																					},
+																					function(data) 
+																					{ 		
+																						$('#viewBySubmission').click();
+																					}
+																				);
+																				
+																				
+																				
+																			}
+																		);
+																	}										
+																})
+																.appendTo('#right');	
+															}*/
+														})
+														.appendTo('#middleColumn');	
+														
+														$('<p class="addedContent">Resultado realizado a la: ' + TimeArray[x] + '</p>' ).appendTo('#middleColumn');	
+														$('<br>').appendTo('#middleColumn');
+													}
+												}
+											);
+			};
+			dvTable.appendChild(anotherView);
+			
+			var br3 = document.createElement('br');
+			dvTable.appendChild(br3);
+			var br4 = document.createElement('br');
+			dvTable.appendChild(br4);
+	       	    
+	       	//Create a HTML button element.
+	       	    var button = document.createElement("input");
+	       	 	button.setAttribute("id","dashboard");
+	       	 	button.setAttribute("type","button");
+	       		button.setAttribute("class", "btn btn-success");
+	       		button.setAttribute("value", "RETURN TO DASHBOARD");
+	       		button.onclick = function() 
+	       			{ // Note this is a function
+	       				window.location.href = "dashboard.html";
+	       		  	};
+	       		
+	            dvTable.appendChild(button);
+	       	    
+	       	    $('td').addClass('abc');
+	       	    
+	       	 $(function () {
+		     		$('td').mouseenter(function() {
+		     			$('td').removeClass('highlighthover');
+		     			$(this).toggleClass('highlighthover');					     			
+		     			
+		     		});
+		     	});
+		       	$(function () {
+		     		$('td').mouseleave(function() {
+		     			$('td').removeClass('highlighthover');
+		     			//$(this).toggleClass('highlighthover');	     			
+		     		});
+		     	});
+		       	
+		       	function addRowHandlers() {
+		     	    var table = document.getElementById("mytable");
+		     	    var rows = table.getElementsByTagName("tr");
+		     	    for (i = 0; i < rows.length; i++) {
+		     	        var currentRow = table.rows[i];
+		     	        var createClickHandler = 
+		     	            function(row) 
+		     	            {
+		     	                return function() { 
+		     	                						
+		     	                		  $('#right').empty();
+										  $('.taskName').remove();
+										  $('.addedContent').remove();
+										  $('#warning').remove();
+		     	                		  
+		     	                		  $('#commonForm').hide();
+		     	                		  
+     	                                  var cell = row.getElementsByTagName("td")[0];
+     	                                  var id = cell.innerHTML;
+     	                                  console.log("You have selected " + id);
+										  $('<p class="taskName"> Results of task ' + id + ' </p>').prependTo('#middleColumn');
+										  
+										  var answerValue = [];
+										  
+										  $.post(			                
+												"readTaskResults.php",
+												{ 
+													taskID: id,
+													campaignID: sessionStorage.selection
+												},
+												function(data) { 
+
+													//alert(data);
+													answerValue = JSON.parse(data);
+													//alert(answerValue.length);
+													
+													for (var i=0;i<campaign.Question_Array.length;i++)
+													{
+														if (campaign.Question_Array[i].quesID == id)
+														{
+															clearMarkers();
+															/*
+															$('#commonForm').show();
+ 	                                       					$('#common_Form_QuesText').val(campaign.Question_Array[i].quesLabel[0]);
+ 	                                       					$('#common_Form_QuesImage').val(campaign.Question_Array[i].quesLabel[1]); 	  */  
+
+															$('<p class="addedContent">La tarea fue: </p>').appendTo('#middleColumn');
+															$('<p class="addedContent"><b>' + campaign.Question_Array[i].quesLabel[0] + '</b></p>').appendTo('#middleColumn');
+																
+															if (campaign.Question_Array[i].quesType == FreeTextSingle_const)
+															{																
+																console.log('Here is question of type ' + campaign.Question_Array[i].quesType); 	 
+																
+																var countAnswer = 0;
+ 	                                       						
+ 	                                       						var answerFreeTextSingle = [];     	                                       						
+ 	                                       						answerFreeTextSingle.push(['Answers of the question ' + id]); 	
+																
+																for (var a = 0; a< answerValue.length;a++) 	
+																{ 
+																	answerFreeTextSingle.push( [answerValue[a][0]] ); 
+																	countAnswer++;
+																}
+																
+																console.log(JSON.stringify(answerFreeTextSingle));
+																$('<p> The number of answer for this task: ' + countAnswer + '.</p><br>').prependTo('#right'); 
+																
+																//Create a HTML Table element.
+																var table_FreeTextSingle = document.createElement("TABLE");
+																table_FreeTextSingle.setAttribute("id","FreeTextSingle_Answer");
+																table_FreeTextSingle.setAttribute("class", "tablestyle FreeTextSingle_table addedContent");
+																table_FreeTextSingle.border = "1";
+																
+																//Get the count of columns.
+																var columnCount = answerFreeTextSingle[0].length;
+																
+																//Add the header row.
+																var rowFreeTextSingle = table_FreeTextSingle.insertRow(-1);
+																for (var index = 0; index < columnCount; index++) {
+																	var headerCell = document.createElement("TH");
+																	headerCell.innerHTML = answerFreeTextSingle[0][index];
+																	rowFreeTextSingle.appendChild(headerCell);
+																}
+																
+																//Add the data rows.
+																for (var index1 = 1; index1 < answerFreeTextSingle.length; index1++) {
+																	rowFreeTextSingle = table_FreeTextSingle.insertRow(-1);
+																	for (var index2 = 0; index2 < columnCount; index2++) {
+																		var cell = rowFreeTextSingle.insertCell(-1);
+																		cell.innerHTML = answerFreeTextSingle[index1][index2];
+																	}
+																}
+																
+																var right = document.getElementById("right");
+																//dvTable.innerHTML = "";
+																right.appendChild(table_FreeTextSingle);																
+																
+															}
+															else if (campaign.Question_Array[i].quesType == FreeTextMulti_const)
+															{																																
+																for (var b=0;b < answerValue.length;b++)
+																{																
+																	var answerFreeTextMulti = [];     	                                       						
+																	answerFreeTextMulti.push(['Answers # ' + (b+1) + ' ']);	
+
+																	for (var c=0;c < answerValue[b].length;c++)
+																	{	
+																		answerFreeTextMulti.push( [answerValue[b][c]] );
+																	}
+																	
+																	var space = document.createElement("br");
+																		
+																		//Create a HTML Table element.
+																		var table_FreeTextMulti = document.createElement("TABLE");
+																		table_FreeTextMulti.setAttribute("id","FreeTextSingle_Answer");
+																		table_FreeTextMulti.setAttribute("class", "tablestyle FreeTextSingle_table addedContent");
+																		table_FreeTextMulti.border = "1";		
+
+																		//Get the count of columns.
+																		var columnCount = answerFreeTextMulti[0].length;
+																		
+																		//Add the header row.
+																		var rowFreeTextMulti = table_FreeTextMulti.insertRow(-1);
+																		for (var index = 0; index < columnCount; index++) {
+																			var headerCell = document.createElement("TH");
+																			headerCell.innerHTML = answerFreeTextMulti[0][index];
+																			rowFreeTextMulti.appendChild(headerCell);
+																		}
+																		
+																		//Add the data rows.
+																		for (var index1 = 1; index1 < answerFreeTextMulti.length; index1++) {
+																			rowFreeTextMulti = table_FreeTextMulti.insertRow(-1);
+																			for (var index2 = 0; index2 < columnCount; index2++) {
+																				var cell = rowFreeTextMulti.insertCell(-1);
+																				cell.innerHTML = answerFreeTextMulti[index1][index2];
+																			}
+																		}
+
+																		var right = document.getElementById("right");
+																		//dvTable.innerHTML = "";
+																		right.appendChild(table_FreeTextMulti);
+																		right.appendChild(space);
+																}
+															}
+															else if (campaign.Question_Array[i].quesType == MultipleChoiceSingle_const)
+															{																
+																var question = campaign.Question_Array[i].quesLabel[0];
+     	                                       					console.log('Here is a MultipleChoiceSingle');
+     	                                       					var subcomponent = campaign.Question_Array[i].subcomponent;
+     	                                       					console.log('Length of subcomponent is ' + subcomponent.length);                                						
+		     	                                       					
+     	                                       					var subcomponentCount = [];
+     	                                       					for (var k = 0;k < subcomponent.length;k++ )
+     	                                       						subcomponentCount.push(0);
+																	
+     	                                       					console.log('Length of subcomponentCount is ' + subcomponentCount.length + ', subcomponent is ' + JSON.stringify(subcomponent)); 
+																
+																for (var j = 0;j < answerValue.length; j++)
+																{
+																	for (var k=0; k < subcomponent.length;k++)
+																	{
+																		if (answerValue[j][0] == subcomponent[k])
+																		subcomponentCount[k]++;
+																	}															
+																}																
+																var array = [];
+     	                                       					for (var k = 0;k < subcomponent.length;k++ ) 	array.push({"label":subcomponent[k],"value":subcomponentCount[k]});    	                                       							
+     	                                       					
+     	                                       					console.log(JSON.stringify(array));
+		     	                                       			
+     	                                       					//-----------------------------     	                                       						
+																drawPieChart(array, question);																			
+		     	                                       			//-----------------------------
+																//$('<br><p> El número de respuesta para esta tarea: ' + answerValue.length + '.</p>').appendTo('#right'); 
+															}
+															else if (campaign.Question_Array[i].quesType == MultipleChoiceMulti_const)
+															{																
+																var subcomponent = campaign.Question_Array[i].subcomponent;
+	 	                                       					console.log('Length of subcomponent is ' + subcomponent.length); 
+	 	                                       					console.log('Subcomponent is ' + JSON.stringify(subcomponent));
+		     	                                       					
+	 	                                       					var subcomponentCount = [];
+	 	                                       					for (var k = 0;k < subcomponent.length;k++ )
+	 	                                       						subcomponentCount.push(0);
+	 	                                       					console.log('Length of subcomponentCount is ' + subcomponentCount.length); 
+	 	                                       					
+																var countAnswer = 0; 
+																for (var j = 0;j < answerValue.length; j++)
+																{
+																	for (var k=0; k < subcomponent.length;k++)
+																	{
+																		for (var l = 0; l< answerValue[j].length;l++)
+																		{
+																			if ( answerValue[j][l] == subcomponent[k] )
+																			{
+																				subcomponentCount[k]++;
+																			}
+																		}
+																	}																	
+																}
+																var array = [];
+     	                                       					for (var k = 0;k < subcomponent.length;k++ ) 	array.push({"label":subcomponent[k],"value":subcomponentCount[k]});    	                                       							
+     	                                       					
+     	                                       					console.log(JSON.stringify(array));
+																
+																//Draw bar chart	 	                                       							 	                                       						
+	 	                                       					$('<div class="chart-container"> <svg class="chart"> </svg> </div> ').appendTo('#right');
+	 	                                       					drawBarChart(array); 
+
+																$('<br><p> El número de respuesta para esta tarea: ' + answerValue.length + '.</p>').appendTo('#right'); 
+															}
+															else if (campaign.Question_Array[i].quesType == FreeNumericSingle_const)
+															{
+																var answerFreeNumericSingle = [];     	                                       						
+																answerFreeNumericSingle.push(['Answers of the question ' + id]); 	                                       						
+																	
+																var countAnswer=0, min=Number.MAX_SAFE_INTEGER,max=Number.MIN_SAFE_INTEGER,average=0,stdDev=0, sum=0;
+																var values = [];
+																
+																for (var a = 0; a< answerValue.length;a++) 	
+																{ 
+																	answerFreeNumericSingle.push( [answerValue[a][0]] ); 
+																	if ( answerValue[a][0] != null )
+																	{
+																		values.push(answerValue[a][0]);																						
+																	}	
+																	countAnswer++;
+																}
+
+																for (var o=0;o< values.length;o++)
+																{
+																	sum = sum + values[o];
+																	if ( values[o] < min ) min = values[o];
+																	if ( values[o] > max ) max = values[o];
+																}
+																
+																average = sum / values.length;
+																
+																var temp1 = 0;
+																for ( var q=0;q < values.length;q++)
+																{
+																	temp1 = temp1 + (values[q] - average)*(values[q] - average);
+																}
+																	
+																var temp2 = temp1 / values.length;
+																	
+																stdDev = Math.sqrt(temp2);
+																	
+																console.log('min is ' + min + ', max is' + max + ', average is ' + average );																
+																	
+																$('<p> The standard deviation from the answers is: ' + stdDev + '.</p>').prependTo('#right');  	
+																$('<p> The maximum value from the answers is: ' + max + '.</p>').prependTo('#right');  	
+																$('<p> The average value from the answers is: ' + average + '.</p>').prependTo('#right');  	  
+																$('<p> The minimum value from the answers is: ' + min + '.</p>').prependTo('#right');  	                                       																				
+																$('<p> The number of answer for this task: ' + countAnswer + '.</p><br>').prependTo('#right');  	
+																
+																//Create a HTML Table element.
+																var table_FreeNumericSingle = document.createElement("TABLE");
+																table_FreeNumericSingle.setAttribute("id","FreeTextSingle_Answer");
+																table_FreeNumericSingle.setAttribute("class", "tablestyle FreeTextSingle_table");
+																table_FreeNumericSingle.border = "1";
+																
+																//Get the count of columns.
+																var columnCount = answerFreeNumericSingle[0].length;
+																
+																//Add the header row.
+																var rowFreeTextSingle = table_FreeNumericSingle.insertRow(-1);
+																for (var index = 0; index < columnCount; index++) {
+																	var headerCell = document.createElement("TH");
+																	headerCell.innerHTML = answerFreeNumericSingle[0][index];
+																	rowFreeTextSingle.appendChild(headerCell);
+																}
+																
+																//Add the data rows.
+																for (var index1 = 1; index1 < answerFreeNumericSingle.length; index1++) {
+																	rowFreeTextSingle = table_FreeNumericSingle.insertRow(-1);
+																	for (var index2 = 0; index2 < columnCount; index2++) {
+																		var cell = rowFreeTextSingle.insertCell(-1);
+																		cell.innerHTML = answerFreeNumericSingle[index1][index2];
+																	}
+																}
+ 	                                       		       	 		var right = document.getElementById("right");
+																//dvTable.innerHTML = "";
+																right.appendChild(table_FreeNumericSingle);
+															}
+															else if (campaign.Question_Array[i].quesType == AudioSensor_const)
+															{
+																for (var b=0;b < answerValue.length;b++)
+																{
+																	var answerAudioSensor = [];
+																	answerAudioSensor.push(['Measurement #' + (b+1) + ' ', '']);																	
+																	
+																	if ( answerValue[b].length > 0 )
+																	{
+																		answerAudioSensor.push( ['Minimum amplitude (dB)',answerValue[b][0]] );
+																		answerAudioSensor.push( ['Average amplitude (dB)',answerValue[b][1]] );
+																		answerAudioSensor.push( ['Maximum amplitude (dB)',answerValue[b][2]] );
+																		answerAudioSensor.push( ['Length of measurement (ms)',answerValue[b][3]] );
+																		answerAudioSensor.push( ['Sampling frequency (ms)',answerValue[b][4]] );
+																		answerAudioSensor.push( ['Number of measurement',answerValue[b][5]] );
+																		answerAudioSensor.push( ['Location (Lat, Long)',answerValue[b][6] + ', ' + answerValue[b][7]] );
+																		answerAudioSensor.push( ['Time of measurement',answerValue[b][8]] );
+																		
+																		var measurement = new google.maps.LatLng( answerValue[b][6], answerValue[b][7] );																																								
+																		addmarker(measurement);
+																	}
+
+																	var space = document.createElement("br");
+																		
+																		//Create a HTML Table element.
+																		var table_FreeTextMulti = document.createElement("TABLE");
+																		table_FreeTextMulti.setAttribute("id","FreeTextSingle_Answer");
+																		table_FreeTextMulti.setAttribute("class", "tablestyle FreeTextSingle_table");
+																		table_FreeTextMulti.border = "1";		
+
+																		//Get the count of columns.
+																		var columnCount = answerAudioSensor[0].length;
+																		
+																		//Add the header row.
+																		var rowFreeTextMulti = table_FreeTextMulti.insertRow(-1);
+																		for (var index = 0; index < columnCount; index++) {
+																			var headerCell = document.createElement("TH");
+																			headerCell.innerHTML = answerAudioSensor[0][index];
+																			rowFreeTextMulti.appendChild(headerCell);
+																		}
+																		
+																		//Add the data rows.
+																		for (var index1 = 1; index1 < answerAudioSensor.length; index1++) {
+																			rowFreeTextMulti = table_FreeTextMulti.insertRow(-1);
+																			for (var index2 = 0; index2 < columnCount; index2++) {
+																				var cell = rowFreeTextMulti.insertCell(-1);
+																				cell.innerHTML = answerAudioSensor[index1][index2];
+																			}
+																		}
+
+																		var right = document.getElementById("right");
+																		//dvTable.innerHTML = "";
+																		right.appendChild(table_FreeTextMulti);
+																		right.appendChild(space);	
+																		
+																		if ( answerValue[b].length > 0 )
+																		{
+																			$('<button id="showMap_' + b + '" type="button" class="btn btn-success" > Show measurement #' + (b+1) + ' on map </button><br><br><br><br>')
+																			.click(function(){	
+																			
+																				var buttonID = $(this).attr('id');
+																				var index = buttonID.substr(buttonID.indexOf('_') + 1, buttonID.length);																			
+																				
+																				if ( answerValue[index].length >0 )
+																				{																																					
+																					clearMarkers();
+																					var measurementLocation = new google.maps.LatLng( answerValue[index][6], answerValue[index][7] );																																								
+																					addMarkerColor(measurementLocation);
+																				}
+																				else
+																				{
+																				}
+																			
+																			})
+																			.appendTo('#right');
+																		}																	
+																}															
+															}
+															else if (campaign.Question_Array[i].quesType == ContRange_const)
+															{
+																var answerContRange = [];     	                                       						
+																answerContRange.push(['Numeric answer of the question ' + id]); 	                                       						
+																	
+																var countAnswer=0, min=Number.MAX_SAFE_INTEGER,max=Number.MIN_SAFE_INTEGER,average=0,stdDev=0, sum=0;																	
+																var values = [];
+																
+																for (var a = 0; a< answerValue.length;a++) 	
+																{ 
+																	answerContRange.push( [answerValue[a][0]] ); 
+																	if ( answerValue[a][0] != null )
+																	{
+																		values.push(answerValue[a][0]);																						
+																	}	
+																	countAnswer++;
+																}
+																for (var o=0;o< values.length;o++)
+																{
+																	sum = sum + values[o];
+																	if ( values[o] < min ) min = values[o];
+																	if ( values[o] > max ) max = values[o];
+																}
+																
+																average = sum / values.length;
+																
+																var temp1 = 0;
+																for ( var q=0;q < values.length;q++)
+																{
+																	temp1 = temp1 + (values[q] - average)*(values[q] - average);
+																}
+																	
+																var temp2 = temp1 / values.length;
+																	
+																stdDev = Math.sqrt(temp2);
+																	
+																console.log('min is ' + min + ', max is' + max + ', average is ' + average );																
+																	
+																$('<p> The standard deviation from the answers is: ' + stdDev + '.</p>').prependTo('#right');  	
+																$('<p> The maximum value from the answers is: ' + max + '.</p>').prependTo('#right');  	
+																$('<p> The average value from the answers is: ' + average + '.</p>').prependTo('#right');  	  
+																$('<p> The minimum value from the answers is: ' + min + '.</p>').prependTo('#right');  	                                       																				
+																$('<p> The number of answer for this task: ' + countAnswer + '.</p><br>').prependTo('#right');  	
+																
+																//Create a HTML Table element.
+																var table_ContRange = document.createElement("TABLE");
+																table_ContRange.setAttribute("id","ContRange_Answer");
+																table_ContRange.setAttribute("class", "tablestyle ContRange_table");
+																table_ContRange.border = "1";
+																
+																//Get the count of columns.
+																var columnCount = answerContRange[0].length;
+																
+																//Add the header row.
+																var rowContRange = table_ContRange.insertRow(-1);
+																for (var index = 0; index < columnCount; index++) {
+																	var headerCell = document.createElement("TH");
+																	headerCell.innerHTML = answerContRange[0][index];
+																	rowContRange.appendChild(headerCell);
+																}
+																
+																//Add the data rows.
+																for (var index1 = 1; index1 < answerContRange.length; index1++) {
+																	rowContRange = table_ContRange.insertRow(-1);
+																	for (var index2 = 0; index2 < columnCount; index2++) {
+																		var cell = rowContRange.insertCell(-1);
+																		cell.innerHTML = answerContRange[index1][index2];
+																	}
+																}
+ 	                                       		       	 		var right = document.getElementById("right");
+																//dvTable.innerHTML = "";
+																right.appendChild(table_ContRange);
+																
+															}
+															else if (campaign.Question_Array[i].quesType == UploadPhoto_const)
+															{																	
+																	console.log('Here is question of type ' + campaign.Question_Array[i].quesType);
+
+																	$('<p id="warning" class="addedContent"><b>Puede demorar varios segundos en mostrar todas las imágenes: </b></p>').appendTo('#middleColumn');  																
+
+																	var answerUploadPhoto = [];     	                                       						
+																	answerUploadPhoto.push(['Answers of the question ' + id]); 	
+
+																	var imageParameter = [];
+																	
+																	for (var a = 0; a< answerValue.length;a++)
+																		{
+																			if (answerValue[a][0] == null)
+																			{	
+																				answerUploadPhoto.push( ['blankpicture'] );
+																			}
+																			else
+																			{
+																				answerUploadPhoto.push( [answerValue[a][0]] );
+																			}
+																			//answerUploadPhoto.push( [answerValue[a][0]] );
+																			
+																			if ( answerValue[a].length > 1 )  // Picture has lat long
+																			{
+																				imageParameter.push( [answerValue[a][1],answerValue[a][2]] );
+																				var photoLocation = new google.maps.LatLng(answerValue[a][1], answerValue[a][2]);
+																				addmarker(photoLocation);
+																				
+																			}
+																			else
+																			{
+																				imageParameter.push( [] );  // Picture has NO lat long
+																			}
+																		}
+																	console.log(JSON.stringify(answerUploadPhoto));
+																	
+																	console.log('Size of markerArray is ' + markerArray.length);									
+																	
+																	
+																	for (var image = 1; image < answerUploadPhoto.length;image++) // index 0 is the text "Answers of the question"
+																	{
+																		$('<br><br><p><b> Upload #' + image + ' </b></p>').appendTo('#right');  
+																		$('<canvas id="cv_' + image +  '"></canvas>').appendTo('#right');  
+																		$('<p> La imagen original está disponible en: www.citizense.uji.es/UserUploadedPic/' + answerUploadPhoto[image] + '.jpg' + '</p>').appendTo('#right');
+																		
+																		var dateVal  = "/Date(" + answerUploadPhoto[image] + ")/";
+																		var date = new Date(parseFloat(dateVal.substr(6)));
+																		
+																		if ( imageParameter[image-1][0] != null )
+																		{
+																			$('<p>La foto fue tomada a las  ' + ( (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() ) + '</p>' ).appendTo('#right');
+																			$('<p> Ubicación de la imagen: (Lat, Long) ' + imageParameter[image-1][0] + ', ' + imageParameter[image-1][1] + '</p>').appendTo('#right');
+																			
+																			$('<button id="showMap_' + image + '" type="button" class="btn btn-success" > Mostrar ubicación en el mapa </button><br><br>')
+																			.click(function(){	
+
+																				var buttonID = $(this).attr('id');
+																				var index = buttonID.substr(buttonID.indexOf('_') + 1, buttonID.length);
+																				
+																				if ( imageParameter[index-1][0] == null )
+																				{
+																					alert('Esta foto no tiene ubicación.');
+																				}
+																				else
+																				{
+																					clearMarkers();
+																					var photoLocation = new google.maps.LatLng(imageParameter[index-1][0], imageParameter[index-1][1]);																																									
+																					addMarkerColor(photoLocation);
+																				}																		
+																			})
+																			.appendTo('#right');
+																		}
+																		else
+																		{																			
+																		}																		
+																		
+																		/*
+																		$('<button id="showMap_' + image + '" type="button" class="btn btn-success" > Show on map </button><br><br><br><br>')
+																		.click(function(){	
+
+																			var buttonID = $(this).attr('id');
+																			var index = buttonID.substr(buttonID.indexOf('_') + 1, buttonID.length);
+																			
+																			if ( imageParameter[index-1][0] == null )
+																			{
+																				alert('This photo has no location');
+																			}
+																			else
+																			{
+																				clearMarkers();
+																				var photoLocation = new google.maps.LatLng(imageParameter[index-1][0], imageParameter[index-1][1]);																																								
+																				addMarkerColor(photoLocation);
+																			}																		
+																		})
+																		.appendTo('#right');*/
+																	}
+																
+																	for (var image = 1; image < answerUploadPhoto.length;image++)
+																	{
+																		var canvas=document.getElementById('cv_' + image);
+																		var ctx= canvas.getContext('2d');
+																		
+																		var img = new Image();
+																		img.onload= drawImageScaled.bind(null, img, ctx);
+																		
+																		img.src = 'UserUploadedPic/' + answerUploadPhoto[image] + '.jpg';	
+																	}
+     	                                       				}
+															else if (campaign.Question_Array[i].quesType == DateInput_const)
+															{
+																var countAnswer = 0;
+ 	                                       						
+ 	                                       						var answerDateInput = [];     	                                       						
+ 	                                       						answerDateInput.push(['Answers of the question ' + id]); 
+																
+																for (var a = 0; a< answerValue.length;a++) 	
+																{ 
+																	answerDateInput.push( [answerValue[a][0]] ); 
+																	countAnswer++;
+																}	
+																
+																$('<p> The number of answer for this task: ' + countAnswer + '.</p><br>').prependTo('#right');  															
+ 	                                       				
+																//Create a HTML Table element.
+																var table_DateInput = document.createElement("TABLE");
+																table_DateInput.setAttribute("id","FreeTextSingle_Answer");
+																table_DateInput.setAttribute("class", "tablestyle FreeTextSingle_table");
+																table_DateInput.border = "1";
+																
+																//Get the count of columns.
+																var columnCount = answerDateInput[0].length;
+																
+																//Add the header row.
+																var rowDateInput = table_DateInput.insertRow(-1);
+																for (var index = 0; index < columnCount; index++) {
+																	var headerCell = document.createElement("TH");
+																	headerCell.innerHTML = answerDateInput[0][index];
+																	rowDateInput.appendChild(headerCell);
+																}
+																
+																//Add the data rows.
+																for (var index1 = 1; index1 < answerDateInput.length; index1++) {
+																	rowDateInput = table_DateInput.insertRow(-1);
+																	for (var index2 = 0; index2 < columnCount; index2++) {
+																		var cell = rowDateInput.insertCell(-1);
+																		cell.innerHTML = answerDateInput[index1][index2];
+																	}
+																}
+																
+																var right = document.getElementById("right");
+																//dvTable.innerHTML = "";
+																right.appendChild(table_DateInput);
+															}
+															else if (campaign.Question_Array[i].quesType == TimeInput_const)
+															{
+																var countAnswer = 0;
+ 	                                       						
+ 	                                       						var answerTimeInput = [];     	                                       						
+ 	                                       						answerTimeInput.push(['Answers of the question ' + id]); 
+																
+																for (var a = 0; a< answerValue.length;a++) 	
+																{ 
+																	answerTimeInput.push( [answerValue[a][0]] ); 
+																	countAnswer++;
+																}
+																$('<p> The number of answer for this task: ' + countAnswer + '.</p><br>').prependTo('#right');  															
+																
+																//Create a HTML Table element.
+																var table_TimeInput = document.createElement("TABLE");
+																table_TimeInput.setAttribute("id","FreeTextSingle_Answer");
+																table_TimeInput.setAttribute("class", "tablestyle FreeTextSingle_table");
+																table_TimeInput.border = "1";
+																
+																//Get the count of columns.
+																var columnCount = answerTimeInput[0].length;
+																
+																//Add the header row.
+																var rowDateInput = table_TimeInput.insertRow(-1);
+																for (var index = 0; index < columnCount; index++) {
+																	var headerCell = document.createElement("TH");
+																	headerCell.innerHTML = answerTimeInput[0][index];
+																	rowDateInput.appendChild(headerCell);
+																}
+																
+																//Add the data rows.
+																for (var index1 = 1; index1 < answerTimeInput.length; index1++) {
+																	rowTimeInput = table_TimeInput.insertRow(-1);
+																	for (var index2 = 0; index2 < columnCount; index2++) {
+																		var cell = rowTimeInput.insertCell(-1);
+																		cell.innerHTML = answerTimeInput[index1][index2];
+																	}
+																}
+																
+																var right = document.getElementById("right");
+																//dvTable.innerHTML = "";
+																right.appendChild(table_TimeInput);	
+															}
+															else if (campaign.Question_Array[i].quesType == WifiSensor_const)
+															{
+																//alert(data);
+																for (var b=0;b < answerValue.length;b++)
+																{
+																	var answerWifiSensor = [];
+																	answerWifiSensor.push(['Measurement #' + (b+1) + ' ','','']);																	
+																	answerWifiSensor.push( ['Network name(SSID)','Signal strength (dBm)','BSSID'] );
+																	
+																	var lat, lon;
+																	
+																	if ( answerValue[b].length > 0 )
+																	{
+																		var networkList = answerValue[b][0];
+																		lat = answerValue[b][1];
+																		lon = answerValue[b][2];
+																		
+																		var measurementWifi = new google.maps.LatLng( lat, lon );																																								
+																		addmarker(measurementWifi);
+																		
+																		//alert('Number of collected network is ' + networkList.length + ' and Lat Long is ' + lat + ', ' + lon);
+																		for (var index = 0; index < networkList.length; index++)
+																		{																			
+																			answerWifiSensor.push([networkList[index].SSID, networkList[index].signalStrength, networkList[index].BSSID]);
+																		}																		
+																	}
+
+																	var space = document.createElement("br");
+																		
+																	//Create a HTML Table element.
+																	var table_WifiSensor = document.createElement("TABLE");
+																	table_WifiSensor.setAttribute("id","WifiSensor_Answer");
+																	table_WifiSensor.setAttribute("class", "tablestyle WifiSensor_table");
+																	table_WifiSensor.border = "1";		
+
+																	//Get the count of columns.
+																	var columnCount = answerWifiSensor[0].length;
+																		
+																	//Add the header row.
+																	var rowWifiSensor = table_WifiSensor.insertRow(-1);
+																	for (var index = 0; index < columnCount; index++) {
+																		var headerCell = document.createElement("TH");
+																		headerCell.innerHTML = answerWifiSensor[0][index];
+																		rowWifiSensor.appendChild(headerCell);
+																	}
+																		
+																	//Add the data rows.
+																	for (var index1 = 1; index1 < answerWifiSensor.length; index1++) {
+																		rowWifiSensor = table_WifiSensor.insertRow(-1);
+																		for (var index2 = 0; index2 < columnCount; index2++) {
+																			var cell = rowWifiSensor.insertCell(-1);
+																			cell.innerHTML = answerWifiSensor[index1][index2];
+																		}
+																	}
+
+																	var right = document.getElementById("right");
+																	//dvTable.innerHTML = "";
+																	right.appendChild(space);
+																	right.appendChild(table_WifiSensor);
+																	
+																																		
+																	$('<p>Time of measurement: ' + answerValue[b][3] + ' </p>').appendTo('#right');
+																	
+																	if ( answerValue[b].length > 0 )
+																	{
+																		$('<button id="showMap_' + b + '" type="button" class="btn btn-success" > Show measurement #' + (b+1) + ' on map </button><br><br><br><br>')
+																		.click(function(){	
+																			
+																			var buttonID = $(this).attr('id');
+																			var index = buttonID.substr(buttonID.indexOf('_') + 1, buttonID.length);																			
+																				
+																			if ( answerValue[index].length >0 )
+																			{																																					
+																				clearMarkers();
+																				var wifiMeasurementLocation = new google.maps.LatLng( lat, lon );																																								
+																				addMarkerColor(wifiMeasurementLocation);
+																			}
+																			else
+																			{
+																			}
+																		
+																		})
+																		.appendTo('#right');
+																	}
+
+																}														
+															}
+														}
+													}           	
+												}
+											 );							
+											 
+     	                                     
+     	                                                                              	                                        
+     	                            };
+     	            };
+		     	        currentRow.onclick = createClickHandler(currentRow);
+		     	    }
+		     	}
+		     	window.onload = addRowHandlers();      	               
+               			                              
+            }
+         );
+	
+			
+	
+});
+</script>
+
+
+</html>

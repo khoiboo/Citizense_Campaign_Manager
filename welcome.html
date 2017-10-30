@@ -1,0 +1,546 @@
+<!DOCTYPE html(lang='en')>
+<head>
+<meta charset="UTF-8">
+<script src="https://use.fontawesome.com/3ffec61ef7.js"></script>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	
+	<!-- Bootstrap -->
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	
+	<!-- Include CSS File Here -->
+	
+	<script type="text/javascript" src="login.js"></script>
+	
+	<script type="text/javascript">
+	
+	$( document ).ready(function() {
+	
+		var path = 'welcome.html';
+		history.pushState(null, null, path + window.location.search);
+		window.addEventListener('popstate', function (event) 
+		{
+			history.pushState(null, null, path + window.location.search);
+		});
+		
+		
+	});
+	</script>
+	
+<style>
+    #questionss {
+      background-color: #e9f2fc;      
+    }
+    #collects {
+      background-color: #e9f2fc;      
+    }
+    
+  </style>
+
+</head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="description" content=""/><meta name="author" content=""/>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript" src="login.js"></script>
+<title>Welcome to Citizense framework</title>
+<!-- Bootstrap Core CSS--><link href="css/bootstrap.min.css" rel="stylesheet"/>
+<!-- FontAwesome--><link rel="stylesheet" href="css/font-awesome.min.css"/>
+<!-- Custom CSS--><link href="css/scrolling-nav.css" rel="stylesheet"/>
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries-->
+<!-- WARNING: Respond.js doesn't work if you view the page via file://--><!--if lt IE 9script(src='https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js')
+|         
+script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')-->
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+<!-- Navigation-->
+<nav role="navigation" class="navbar navbar-default navbar-fixed-top">
+<div class="container">
+<div class="navbar-header page-scroll">
+<button type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse" class="navbar-toggle"><span class="sr-only">Toggle navigation               </span><span class="icon-bar">               </span><span class="icon-bar">  </span><span class="icon-bar"></span></button>
+<a href="index.html" data-target="#page-top" class="navbar-brand page-scroll">Citizense</a>
+</div><!-- Collect the nav links, forms, and other content for toggling-->
+<div class="collapse navbar-collapse navbar-ex1-collapse">
+	<ul class="nav navbar-nav"><!-- Hidden li included to remove active class from about link when scrolled up past about section-->
+		<li class="hidden"><a href="#page-top" class="page-scroll">              </a></li>
+		<li class="dropdown"><a href="welcome.html" role="button" aria-expanded="false">Overview</a>
+			<ul role="menu" class="dropdown-menu">
+				<li><a href="welcome.html#questions" data-target="#questions" class="page-scroll">Campaign author</a></li>
+				<li><a href="welcome.html#audience" data-target="#audience" class="page-scroll">Participants</a></li>
+				<li><a href="welcome.html#participants" data-target="#participants" class="page-scroll">Create a campaign</a></li>
+				<li><a href="welcome.html#collect" data-target="#collect" class="page-scroll">Collect Data</a></li>
+				<li><a href="welcome.html#data" data-target="#data" class="page-scroll">Visualize Data</a></li>
+			</ul>
+		</li>
+		
+		
+		
+		<li><a href="welcome.html#about" data-target="#about" class="page-scroll">About Us</a></li>
+		<li><a target="_blank" href="/publicResultViewerTest.html"  class="page-scroll">Live results of the experiment</a></li> 
+		
+		
+	</ul>
+	
+	
+	<ul class="nav navbar-nav navbar-right">
+		<!-- <li>
+			<div class="btn-group navbar-btn">
+			<a href="index.html#collect" data-target="#collect" class="page-scroll btn btn-primary">Download app</a>
+			<a href="index.html#started" data-target="#started" class="page-scroll btn btn-primary">Create account</a>
+			</div>
+		</li> -->
+		<form class="navbar-form navbar-right">
+                <!--If the person authenticate in web page these button won't appear-->
+                <div id="loginButtonsUserNoAuth">
+
+                    <div class="form-group" id="emaildiv">
+                        <input id="email" type="email" placeholder="email"
+                               name="email" size="10"
+                               class="form-control">
+                    </div>
+                    <div class="form-group" id="passworddiv">
+                        <input id="password" type="password" placeholder="password"
+                               name="password"
+                               size="10" class="form-control">
+                    </div>
+                    <button type="button" name="login" class="btn btn-success" id="login">    Login   </button>
+                    <button type="button"  class="btn btn-success" id="signin">             Sign Up   </button>
+					
+					<a href="welcome_es.html"> <img id="show_text_es" src="WebpagePic/es.png"  width="20px" title="Español"/> </a>  						
+					<!-- <a href="index.html"> <img id="show_text_de" src="WebpagePic/de.png"  width="20px" title="Deutsche"/> </a> -->
+
+					
+                </div>
+                <!--If the person authenticate in web page these button will appear-->
+                <div id="welcomeButtonsUserAuth">
+                    <span style="color: white" id="nameSurnameLoggedUserAuth">
+                        <!--Name of user, name and surname of the login user loaded from JS-->
+                    </span>
+                    
+                    
+                </div>
+                
+            </form>
+	</ul>
+</div><!-- /.navbar-collapse-->
+</div><!-- /.container-->
+</nav>
+
+<!-- Intro Section-->
+<section id="intro" class="intro-section">
+	<div class="container">
+	<div class="row"><div class="col-lg-12"><h1><font color=#4c8dc7>Citizense</font></h1></div></div>
+	<div class="row"><div class="col-lg-12"><img src="WebpagePic/CitizenseLogo.png" height="300px"/></div></div>
+	<div class="row"><div class="col-lg-12"> <br/><p class="lead"><font color=#4c8dc7>A multi-lingual platform for everyone to launch and participate in data collection campaigns. Join the platform and act as campaign creator 
+																						(who defines the campaign), or as participant (to collect the data), or <b>both</b>. This platform also allows real-time
+																						monitoring and visualizing of the collected results. </font></p><br/></div></div>
+	<div class="row">
+		
+		<div class="col-md-2 col-xs-6">			
+		</div>
+		<div class="col-md-2 col-xs-6">			
+		</div>
+		
+		<div class="col-md-2 col-xs-6">
+			<a href="#questions" data-target="#participants" class="page-scroll">
+			<span class="fa-stack fa-5x"><i class="fa fa-user" aria-hidden="true"></i></span>
+			</a>    <h4 class="text-center">Campaign author</h4>
+		</div>
+		
+		<div class="col-md-2 col-xs-6">
+			<a href="#audience" data-target="#audience" class="page-scroll">
+			<span class="fa-stack fa-5x"><i class="fa fa-user" aria-hidden="true"></i></span>
+			</a>    <h4 class="text-center">Participants</h4>
+		</div>
+		
+		<div class="col-md-2 col-xs-6">			
+		</div>
+		<div class="col-md-2 col-xs-6">			
+		</div>
+		
+		
+		
+		
+	</div>
+	
+	<div class="row">
+	<br><br>
+	</div>
+	
+	<div class="row">
+	
+		<div class="col-md-3 col-xs-12">			
+		</div>
+	
+		<div class="col-md-2 col-xs-4">
+			<a href="#participants" data-target="#questions" class="page-scroll">
+			<span class="fa-stack fa-5x"><i class="fa fa-file-o" aria-hidden="true"></i></span>
+			</a> 	<h4 class="text-center">Create a campaign</h4>
+		</div>
+		
+		<div class="col-md-2 col-xs-4">
+			<a href="#collect" data-target="#collect" class="page-scroll">
+			<span class="fa-stack fa-5x"><i class="fa fa-mobile" aria-hidden="true"></i></span>
+			</a>	<h4 class="text-center">Collect data</h4>
+		</div>
+		
+		<div class="col-md-2 col-xs-4">
+			<a href="#data" data-target="#data" class="page-scroll">
+			<span class="fa-stack fa-5x"><i class="fa fa-tasks" aria-hidden="true"></i></span>
+			</a>	<h4 class="text-center">Visualize/Analyze data</h4>
+		</div>
+		
+		<div class="col-md-3 col-xs-12">			
+		</div>
+	
+	</div>
+	
+	<div class="row">
+	<br><br>
+	</div>
+	
+	<div class="row">
+	
+		<div class="col-md-12 col-xs-6">			
+			<!-- <span class="fa-stack fa-5x"><i class="fa fa-gamepad" aria-hidden="true"></i></span>  -->
+			<a href="#experiment">	<h4 class="text-center">About the experiment</h4> </a>
+		</div>
+	
+	</div>
+	
+	
+	</div>
+</section>
+
+
+
+
+<!-- Questions Section-->
+<section id="questions" class="overview-section">
+	<div class="container">
+		<div class="row">
+		<div class="col-lg-12"><h1>Campaign author</h1></div>
+		</div>
+		
+		<div class="row">
+		<div class="col-lg-12"><p class="lead">You can create a data collecting process (a campaign) on the topic of your choice by this online campaign manager. The results of your 
+												campaigns are also available in realtime, through the campaign manager. Just sign up in this platform, then you will receive <b>interesting gifts</b> if you have a very creative 
+												campaign, or your campaign is liked the most by other participants.</p></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<div id="questions-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active"><img src="WebpagePic/dashboard.jpg"/></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Audience Section-->
+<section id="audience" class="overview-section">
+	<div class="container">
+		<div class="row">
+		<div class="col-lg-12"><h1>Participants</h1></div>
+		</div>
+		
+		<div class="row">
+		<div class="col-lg-12"><p class="lead">You are going to collect different types of data, specified in the campaigns. Of course you efforts count, as some campaigns will 
+												give you <b> tangible rewards</b>. You can also have fun and compete with other participants by the points earned in each campaign. Your contribution of 
+												data will help in many ways: the campus and city infrastructure can be improved, valuable information are 
+												shared among people, or simply help others (and yourself) to save money by sharing good commercial promotions. Start collecting 
+												data now by getting our Citizense app on <a href="https://play.google.com/store/apps/details?id=geoc.esr06.gaiatascastellon2017">Google Play store</a></p></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<div id="questions-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active"><img src="WebpagePic/participantDoingCampaigns.jpg"/></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Participants Section-->
+<section id="participants" class="overview-section">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12"><h1>Create a campaign</h1></div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12"><p class="lead">The campaign is a combination of different sensing tasks, each task is of different types (text input, numeric input, data & time input, audio sensor, WiFi sensor and camera), 
+													with dynamic links (unconditional and conditional) between the tasks. With this combination, canpaign authors can create a very flexible campaign on your prefered topic. 
+													Furthermore, you can intuitively specify other parameters of a campaign. For example, the author can set a limit in terms of space and time for his/her campaign.</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 col-xs-6">
+				<div id="collect-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active">
+							<a href=""><img src="WebpagePic/step1_nice.png"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-md-6 col-xs-6">
+				<div id="collect2-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active">
+							<a href=""><img src="WebpagePic/step2_nice.png"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Collect Section-->
+<section id="collect" class="overview-section">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12"><h1>Collect Data</h1></div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12"><p class="lead">With the Android app, participants can download the campaigns, execute the campaigns and immediately check their account to see the increased points and incentive 
+													earned by the campaign. Just follow the instructions on the screen. Don't worry if the network connection drops unexpectedly, the app will keep the collected data internally and 
+													submit later; your effort will never be lost. You can also view the results of public campaigns right on your device, to see how others are doing, in real time.  </p>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-3 col-xs-3">
+				
+			</div>
+			
+			<div class="col-md-6 col-xs-6">
+				<div id="collect-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active">
+							<a href=""><img src="WebpagePic/collectData_en.jpg"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-md-3 col-xs-3">
+				
+			</div>
+			
+			
+		</div>
+	
+		<div class="row">
+			<div class="col-md-3 col-xs-3">
+				
+			</div>
+			
+			<div class="col-md-6 col-xs-6">
+				<a href="https://play.google.com/store/apps/details?id=geoc.esr06.gaiatascastellon2017">
+				<img src="https://developer.android.com/images/brand/en_app_rgb_wo_60.png" alt="Android app on Google Play"/>
+				</a>
+			</div>
+			
+			<div class="col-md-3 col-xs-3">
+				
+			</div>				
+		</div>
+	</div>
+</section>
+
+<!-- Questions Section-->
+<section id="data" class="overview-section">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12"><h1>Visualize/Analyze Data</h1></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<p class="lead"> As campaign authors, you can see the visualized and aggregated data in real time. If you share the results of certain campaigns 
+					with the public, they can also see the results in real time, therefore data is shared and further discussed. This platform also provides data to other
+					systems that can further analyzed the participants' collected data.
+				</p>
+			</div>
+			
+		</div>
+		
+		<div class="row">
+		
+			<div class="col-md-6 col-xs-6">
+				<div id="collect-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active">
+							<a href=""><img src="WebpagePic/visualize1.jpg"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-md-6 col-xs-6">
+				<div id="collect-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active">
+							<a href=""><img src="WebpagePic/visualize2.jpg"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<br><br>
+			
+		<div class="row">
+			<div class="col-md-6 col-xs-6">
+				<div id="collect-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active">
+							<a href=""><img src="WebpagePic/visualizeWithMap.jpg"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-md-6 col-xs-6">
+				<div id="collect-carousel" data-ride="carousel" data-interval="false" class="carousel slide">
+					<div role="listbox" class="carousel-inner">
+						<div class="item active">
+							<a href=""><img src="WebpagePic/visualize3.jpg"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			
+		</div>
+	</div>
+</section>
+
+<!-- Experiment Section-->
+<section id="experiment" class="overview-section">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12"><h1>About the experiment</h1></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<p class="lead"> You are invited to join our experiment on a new citizen participation platform (Citizense). First of all, it 
+								 will be lots of fun, and bring you concrete rewards for your efforts. You will also get to know more about the 
+								 citizen participation approach, which is trending nowadays in modern cities worldwide. At the same time, your 
+								 feedback, collected data and user experience are crucial to our ongoing research on citizen participation.
+				</p>
+				
+				<p class="lead"> You can play different roles when interacting with the platform: <b>author</b>, <b>participants</b> or <b>both the 2 roles</b>. If you act as an <a href="#questions"><b>author</b></a>, 
+					you can easily create data collection campaigns, launch them and later inspect the data collected, and nicely 
+					visualize it using the platform. You are free to decide on the topic and the types of data to be collected. We will present 
+					gifts to authors with the most interesting and creative campaigns. If you act as <a href="#audience"><b>participant</b></a>, you use our 
+					Android mobile app and follow the instructions in the campaigns. The app will show you several campaigns, which could be from different actors: UJI, the 
+					city hall of Castellón, the organizer of the experiment and the campaigns created by you and your colleagues. During the experiment, new campaigns will continuously become available.
+				</p>
+				
+				<p class="lead"> The experiment will end on <b>5 Nov 2017</b>; prizes, gifts (of value 25€ each) and cash are immediately delivered to you after that date. 
+								You can collect your rewards (cash and/or gifts) at Espaitec 2 building (UJI campus), ground floor, from 10.00am to 5.00pm everyday from 6 to 9 Nov 2017 . </p>
+				
+				<p class="lead"> Disclosure: all data used in the experiments originates from the
+									organizers of this experiments; all data collected will only be
+									used for research purposes. No data will be shared with third parties.</p>
+				
+				<p class="lead"> The mobile Android app "Citizense_UJI" is available on <a href="https://play.google.com/store/apps/details?id=geoc.esr06.gaiatascastellon2017">Google Play store</a>  </p>
+				
+				<p class="lead"> If you have any questions, feel free to write us at citizense.info@gmail.com</p>
+				
+				
+			</div>
+			
+		</div>
+		
+		
+	</div>
+</section>
+
+<!-- Getting Started Section-->
+<section id="started" class="getting-started-section">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12"><h1>Join us now!</h1></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<p class="lead">If you're ready to start a data collecting process on any topics, just Sign up or Login now to discover all the 
+				features of the Citizense framework. Your contribution and experience are very important to us.
+				</p>
+					
+			<br/>
+			<form class="navbar-form ">
+                <!--If the person authenticate in web page these button won't appear-->
+                <div id="loginButtonsUserNoAuth">
+
+                    <div class="form-group" id="emaildiv">
+                        <input id="email2" type="email" placeholder="email"
+                               name="email" size="10"
+                               class="form-control">
+                    </div>
+                    <div class="form-group" id="passworddiv">
+                        <input id="password2" type="password" placeholder="password"
+                               name="password"
+                               size="10" class="form-control">
+                    </div>
+                    <button type="button" name="login" class="btn btn-success" id="login2">    Login   </button>
+                    <button type="button"  class="btn btn-success" id="signin2">             Sign Up   </button>
+                </div>
+                <!--If the person authenticate in web page these button will appear-->
+                <div id="welcomeButtonsUserAuth">
+                    <span style="color: white" id="nameSurnameLoggedUserAuth">
+                        <!--Name of user, name and surname of the login user loaded from JS-->
+                    </span>
+                    
+                    
+                </div>
+                
+            </form>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Contact Section-->
+<section id="about" class="overview-section">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1>About Us</h1>
+				</div>
+			</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<p class="lead">If you have any questions or suggestions, feel free to contact us via e-mail, citizense.info@gmail.com. We appreciate your feedback very much, and we will reply instantly.</p>
+			</div>
+		</div>
+		<br/><br/>
+		<div class="row">
+			<div style="text-align:left;" class="col-lg-12">
+				<ul>
+					<li><h4>Ngo Manh Khoi</h4><p>Ph.D researcher, Universitat Jaume I, Castellón de la Plana, Spain</p></li>
+					<li><h4>Fernando Benitez</h4><p>Ph.D researcher, Universitat Jaume I, Castellón de la Plana, Spain</p></li>
+					<li><h4>Sven Casteleyn</h4><p>Professor, Universitat Jaume I, Castellón de la Plana, Spain</p></li>
+					
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+</body>
+

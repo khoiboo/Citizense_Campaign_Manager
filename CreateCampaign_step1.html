@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<!-- Include JS File Here -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+<title>Campaign Creator - Step 1</title>
+
+<!-- <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css"> -->
+<link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/themes/calcite/dijit/calcite.css">
+<link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/themes/calcite/esri/esri.css">
+
+<style type="text/css">
+#info {
+        top: 20px;
+        color: #444;
+        height: auto;
+        font-family: arial;
+        right: 20px;
+        margin: 5px;
+        padding: 10px;
+        position: absolute;
+        width: auto;
+        z-index: 40;
+        border: solid 2px #666;
+        border-radius: 4px;
+        background-color: #fff;
+      }
+      html, body, #mapDiv {
+        padding:0;
+        margin:0;
+        height:100%;
+      }
+      button {
+        display: block;
+      }
+</style>
+<script src="https://js.arcgis.com/3.20/"></script>
+
+
+
+</head>
+
+<body class="calcite">
+<br><br>
+<!--Nav-->
+<nav class="navbar navbar-inverse navbar-fixed-top" style="background: #4c8dc7;">
+    <div class="container">
+        <div class="navbar-header">
+            <!--Part of left-->
+            
+            <div id="stepsUserAuth">
+                <a class="navbar-brand" href="" title="NavApps">
+                    <img src="transparentCitizense.png" alt="Geo-C" height="30px" style="display: inline">                    
+                </a>
+            <span class="navbar-brand steps">                  
+            </span>
+            </div>            
+        </div>
+        <!--Part of right-->
+        <div id="navbar" class="navbar-collapse collapse">            
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>      
+
+<h1 class = "step1"> Welcome to the Campaign Creator </h1>
+
+<!-- --------------------Left column------------------- -->
+<div id="left" class="col-lg-5 ">
+<div id = "form_step1">
+
+<table>
+   
+  		<tr> Please enter a <b>campaign name </b> that clearly describes the purpose of your campaign. This is what participants will see in the list of campaigns! </tr> 
+  		<tr> <input type="text" id="Campaign_ID" class="form-control" style="width:70%;"> </tr>  
+		
+		<tr> <button id="checkName"  class="btn btn-primary">Check name availability</button> </tr>
+  
+		<br><br>
+  		<tr> Campaign description (for the participants):</tr> 
+  		<tr> <textarea type="text" id="Campaign_Description"  class="form-control"style="width:70%;" rows="5" cols="60"></textarea> </tr>  
+    
+</table>  
+<br>  
+  
+  <b>Mode of completion: </b> <input type="checkbox" name="mycheckbox" id="onetime" value="0" /> Tick if the campaign can only be answered once per participant. <br>
+  
+  <b>Time period: </b> <input type="checkbox" name="mycheckbox" id="expiry" value="0" /> Tick if the campaign should only be available in a specific time period <br>
+  
+  <div id="mycheckboxdiv" style="display:none"  >  
+   <!-- Start Date: <input type="text" id="datepicker"><br> -->    
+   <!-- End Date: <input type="text" id="datepicker2"> -->  
+  
+  <table>
+  <tr> 
+  		<th> Start date </th> 
+  		<th> <input type="text" id="datepicker"> </th>  
+  </tr>
+  <tr> 
+  		<th> Start time (format hh:mm)</th> 
+  		<th> <input type="text" id="startHour" size="1"> : <input type="text" id="startMinute" size="1">  </th>  
+  </tr>
+  <tr> 
+  		<th> End date </th> 
+  		<th> <input type="text" id="datepicker2"> </th>  
+  </tr> 
+  <tr> 
+  		<th> End time (format hh:mm) </th> 
+  		<th> <input type="text" id="endHour" size="1"> : <input type="text" id="endMinute" size="1">  </th>  
+  </tr>
+  
+  </table>
+  
+  <style>
+th, td {
+    padding: 5px;
+}
+</style>
+  
+  </div><br>    
+  
+  <br>
+<b>Share the results: </b> <input type="checkbox" name="mycheckbox" id="viewResult" /> Tick if you want the public to see the aggregated and anonymized result of this campaign <br>  
+
+<b>Show your name: </b> <input type="checkbox" name="mycheckbox" id="showName" /> Tick if you want to show your first name and portrait picture to the participants <br>  
+
+<b>Continuous submission: </b> <input type="checkbox" name="mycheckbox" id="continuousSubmission" /> Tick if you allow participants to submit continuously (no waiting time in between, usually 1 minute) <br>  
+  
+</div>
+
+</div>
+
+<!-- --------------------Right column------------------- -->
+<div id="right" class="col-lg-7 ">
+
+<input type="checkbox" name="mycheckbox" id="geo" value="0" /> Tick to restrict the campaign to specific area(s) <br>
+
+	<div id="info">
+      <!-- <div>Select a shape then draw on map to add graphic</div> -->
+      <p id="sentence1" style="margin-bottom: 0px;">Select a shape, </p>
+      <p id="sentence2" style="margin-bottom: 0px;">then draw on the map. </p>
+      <p id="sentence3" style="margin-bottom: 0px;"> Draw as many shapes </p>
+	  <p id="sentence4"> as you like </p>
+      <button id="Circle"     class="btn btn-block btn-success hiddenfirst" style="margin-bottom: -15px;" data-toggle="Circle-tooltip" title="Click on the desired center of the circle and drag to increase/decrease the radius. Release the mouse to finish the circle">Circle</button>      <br> 
+      <button id="Polygon"    class="btn btn-block btn-success hiddenfirst" style="margin-bottom: -15px;" data-toggle="Polygon-tooltip" title="Click to specify the vertices of the polygon, double-click on the last vertices to complete and close the polygon">Polygon</button>      <br>
+      
+      <button id="Delete"     class="btn btn-block btn-warning hiddenfirst" style="margin-bottom: -15px;">Delete last shape</button> <br>     
+      <button id="deleteall"  class="btn btn-block btn-danger  hiddenfirst" style="margin-bottom: -15px;">Delete All</button> <br>
+      
+    </div>
+
+    <div id="mapDiv"></div>
+	
+	<div id="instructionCircle">To draw a circle, click on the center of your desired circle, hold the mouse and move to expand the circle, finally release mouse to finish the circle  </div>
+	<div id="instructionPoligon">To draw a poligon, click to create the vertices of the poligon, finally double-click on the last vertex to close the poligon </div>
+
+</div>
+<br><br><br><br>
+
+<!-- ------------------------------------------------------------------------------------------------ -->
+<div id="div1" class="col-lg-4 ">
+</div>
+<div id="div2" class="col-lg-4 ">
+
+	<br><br>
+	<button id="next"  class="btn btn-block btn-primary">Next Step</button>
+
+</div>
+<div id="div3" class="col-lg-4 ">
+</div>
+<!-- ------------------------------------------------------------------------------------------------ -->
+
+<br>
+</body>
+
+
+  
+ 
+
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+	var userID = sessionStorage.getItem('username');
+	if (userID == null)
+		{
+			alert('Please log in or sign up');
+			window.location.href = "welcome.html";
+		}
+	else
+	{
+		console.log('First name of author is ' + sessionStorage.firstName + ' and linkPic is ' + sessionStorage.linkPic);
+		$('#info').hide();
+		$('#instructionCircle').hide();
+		$('#instructionPoligon').hide();
+	
+			$('#geo').change(function() {
+				$('#info').toggle();
+				$('#deleteall').click();
+				$('#instructionCircle').toggle();
+				$('#instructionPoligon').toggle();				
+			});	
+			
+			var map, tb;
+			var area_list= [];
+			var area_list_WebMercator = [];
+			var graphic;
+
+			require([
+			  "esri/map", "esri/toolbars/draw", "esri/symbols/SimpleFillSymbol", "esri/geometry/Point",
+			  "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
+			  "esri/symbols/PictureFillSymbol", "esri/symbols/CartographicLineSymbol", 
+			  "esri/graphic", "esri/geometry/webMercatorUtils",
+			  "esri/Color", "dojo/dom", "dojo/on", "dojo/domReady!", "esri/dijit/Search"
+			], function(
+			  Map, Draw,SimpleFillSymbol, Point,
+			  SimpleMarkerSymbol, SimpleLineSymbol,
+			  PictureFillSymbol, CartographicLineSymbol, 
+			  Graphic, webMercatorUtils,
+			  Color, dom, on, Search
+			) {
+			  map = new Map("mapDiv", {
+				basemap: "streets",
+				center: [-0.045030, 39.988032],
+				zoom: 13
+			  });
+			  map.on("load", initToolbar);
+			  
+			  
+
+			  // markerSymbol is used for point and multipoint, see http://raphaeljs.com/icons/#talkq for more examples
+			  var markerSymbol = new SimpleMarkerSymbol();
+			  markerSymbol.setPath("M16,4.938c-7.732,0-14,4.701-14,10.5c0,1.981,0.741,3.833,2.016,5.414L2,25.272l5.613-1.44c2.339,1.316,5.237,2.106,8.387,2.106c7.732,0,14-4.701,14-10.5S23.732,4.938,16,4.938zM16.868,21.375h-1.969v-1.889h1.969V21.375zM16.772,18.094h-1.777l-0.176-8.083h2.113L16.772,18.094z");
+			  markerSymbol.setColor(new Color("#00FFFF"));
+
+			  // lineSymbol used for freehand polyline, polyline and line. 
+			  var lineSymbol = new CartographicLineSymbol(
+				CartographicLineSymbol.STYLE_SOLID,
+				new Color([255,0,0]), 10, 
+				CartographicLineSymbol.CAP_ROUND,
+				CartographicLineSymbol.JOIN_MITER, 5
+			  );
+
+			  // fill symbol used for extent, polygon and freehand polygon, use a picture fill symbol
+			  // the images folder contains additional fill images, other options: sand.png, swamp.png or stiple.png
+			  var fillSymbol = new SimpleFillSymbol();
+
+			  function initToolbar() {
+			  
+				tb = new Draw(map);	
+				tb.on("draw-end", addGraphic);    
+
+				// event delegation so a click handler is not
+				// needed for each individual button
+				on(dom.byId("info"), "click", function(evt) {
+				  if ( evt.target.id === "info" || evt.target.id.includes('sentence') ) {
+					return;
+				  }
+				  
+				  if ( evt.target.id === "deleteall" ) {
+					  map.graphics.clear();
+					  for (var i = area_list.length;             i > 0; i--) {   area_list.pop();  }
+					  for (var j = area_list_WebMercator.length; j > 0; j--) {   area_list_WebMercator.pop();   }   
+					  console.log('Size of area array is ' + area_list.length);
+					  console.log( JSON.stringify(area_list) );
+					  return;
+					}
+				  
+				  if ( evt.target.id === "Delete" ) {
+					  map.graphics.remove(map.graphics.graphics[map.graphics.graphics.length - 1]);
+					  area_list.splice(area_list.length-1,1);
+					  area_list_WebMercator.splice(area_list_WebMercator.length-1,1);
+					  console.log('Size of area array is ' + area_list.length);
+					  console.log('Size of Mercator array is ' + area_list_WebMercator.length);
+					  console.log( JSON.stringify(area_list) );
+					  return;
+					}
+				  var tool = evt.target.id.toLowerCase();
+				  map.disableMapNavigation();
+				  tb.activate(tool);
+				});
+				initFunc(map);
+			  }
+			  
+			  function initFunc(map) {
+					if( navigator.geolocation ) {
+						navigator.geolocation.getCurrentPosition(zoomToLocation, locationError);
+						//watchId = navigator.geolocation.watchPosition(showLocation, locationError);
+					} else {
+						alert("Browser doesn't support Geolocation. Visit http://caniuse.com to see browser support for the Geolocation API.");
+					}
+				}
+			
+			function locationError(error) {
+
+					//error occurred so stop watchPosition
+					if( navigator.geolocation ) {
+						navigator.geolocation.clearWatch(watchId);
+					}
+					switch (error.code) {
+						case error.PERMISSION_DENIED:
+							alert("Location not provided");
+							break;
+
+						case error.POSITION_UNAVAILABLE:
+							alert("Current location not available");
+							break;
+
+						case error.TIMEOUT:
+							alert("Timeout");
+							break;
+
+						default:
+							alert("unknown error");
+							break;
+					}
+				}
+				
+			function zoomToLocation(location) {
+					console.log("Zoom");
+					var pt = new Point(location.coords.longitude, location.coords.latitude);
+					map.centerAndZoom(pt, 13);
+				}
+
+			  function addGraphic(evt) {
+				//deactivate the toolbar and clear existing graphics 
+				tb.deactivate(); 
+				map.enableMapNavigation();
+
+				// figure out which symbol to use
+				var symbol;
+				if ( evt.geometry.type === "point" || evt.geometry.type === "multipoint") {
+				  symbol = markerSymbol;
+				} else if ( evt.geometry.type === "line" || evt.geometry.type === "polyline") {
+				  symbol = lineSymbol;
+				}
+				else {
+				  symbol = fillSymbol;
+				}
+				
+				var graphic_converted = webMercatorUtils.webMercatorToGeographic(evt.geometry);
+				
+				var newGraphic = new Graphic(evt.geometry, symbol);
+				map.graphics.add(newGraphic);
+				
+				//alert(JSON.stringify(graphic_converted.toJson()));
+				//alert(JSON.stringify(newGraphic.toJson()));
+				
+				area_list.push(JSON.stringify(graphic_converted.toJson()));
+				area_list_WebMercator.push(JSON.stringify(newGraphic.toJson()));
+				
+				//alert(JSON.stringify(graphic_converted.toJson()));
+				console.log('Size of area array is ' + area_list.length);   
+				console.log( JSON.stringify(area_list) );
+			  }
+			});			
+						
+			$('#expiry').change(function() 
+			{
+				$('#mycheckboxdiv').toggle();
+				if ( $(this).not(":checked"))
+				{
+					$('#startHour').val('');
+					$('#startMinute').val('');
+					$('#endHour').val('');
+					$('#endMinute').val('');
+					$('#datepicker').val('');
+					$('#datepicker2').val('');					
+				}
+			});	
+			
+			$('[data-toggle="Circle-tooltip"]').tooltip(); 
+			$('[data-toggle="Polygon-tooltip"]').tooltip(); 
+			
+			function recursiveGetProp(obj, lookup, callback) {
+				for (property in obj) {
+					if (property == lookup) {
+						callback(obj[property]);
+					} else if (obj[property] instanceof Object) {
+						recursiveGetProp(obj[property], lookup, callback);
+					}
+				}
+			}
+			
+			$('#checkName').on('click', function(e){
+				console.log('Check name now');
+				var input = $('#Campaign_ID').val().trim();
+				var allName = [];
+				$.post(			                
+								"checkName.php",
+								{ 
+									data: input 			                  
+								},
+								function(data) {			               
+									
+								   console.log(data);	
+								   var Jobj = JSON.parse(data); 
+								   
+								   recursiveGetProp(Jobj, 'campaign_ID', function(obj) 
+										   {
+												//console.log(obj);
+												allName.push(obj)
+											});
+									console.log('All name is ' + JSON.stringify(allName));
+									
+									if ( allName.indexOf(input) > -1 )
+									alert('There is already a campaign with the same name');
+									else
+									alert('This name is available');
+								}
+							 );
+				
+			});
+			
+				
+			
+			
+			
+			$('#next').on('click', function(e){
+				
+				var CampaignID;
+				var CampaignDescription;
+				var onetime;
+				var expiry;
+				var startDate;
+				var endDate;
+				var AreaOfInterestBoolean;
+				
+				var showResult;
+				var showAuthor;
+				var continuousSubmissionBoolean;
+				
+				var check = true;				
+				
+				CampaignID = $('#Campaign_ID').val().trim();
+				console.log(CampaignID);
+				
+				//if geo is ticked and has no shapes
+				if (area_list.length == 0) $('#geo').prop('checked', false);
+				
+				
+				CampaignDescription = $('#Campaign_Description').val();
+				
+				onetime = $('#onetime').is(':checked') ? true : false ;
+				console.log('Boolean value of onetime is ' + onetime);
+				
+				expiry = $('#expiry').is(':checked') ? true : false ;
+				
+				showResult = $('#viewResult').is(':checked') ? true : false ;
+				
+				showAuthor = $('#showName').is(':checked') ? true : false ;
+				
+				continuousSubmissionBoolean = $('#continuousSubmission').is(':checked') ? true : false ;
+				
+				console.log('Expiry value is ' + expiry);		
+				
+				if (expiry == true)
+					{
+						if ( isNaN($('#startHour').val()) || isNaN($('#startMinute').val()) || isNaN($('#endHour').val()) || isNaN($('#endMinute').val())  )
+						{
+							check = false;
+							alert('Make sure the hour and minute input are numbers');
+						}
+						
+						if ( parseInt( $('#startHour').val() ) >= 24 || parseInt( $('#startHour').val() ) <= -1 || parseInt( $('#startMinute').val() ) >= 60 || parseInt( $('#startMinute').val() ) <= -1 || parseInt( $('#endHour').val() ) >=24 || parseInt( $('#endHour').val() ) <=-1|| parseInt( $('#endMinute').val() ) >=60 || parseInt( $('#endMinute').val() ) <= -1)
+						{
+							check = false;
+							alert('Make sure that hour are between 0 and 23  and/or minute are between 0 and 59');
+						}
+						
+						if (check == true)
+						{
+						startDate = $('#datepicker').val()  + ' ' + $('#startHour').val() + ':' + $('#startMinute').val()  ;				
+						endDate   = $('#datepicker2').val() + ' ' + $('#endHour').val()   + ':' + $('#endMinute').val()  ;				
+						}
+					}
+				
+				var DateStart = new Date();
+				DateStart.setMonth  ( parseInt($('#datepicker').val().substr(0,2), 10) -1   );
+				DateStart.setDate   ( parseInt($('#datepicker').val().substr(3,5), 10));
+				DateStart.setYear   ( parseInt($('#datepicker').val().substr(6,10)));
+				DateStart.setHours  ( parseInt( $('#startHour').val() ));
+				DateStart.setMinutes( parseInt( $('#startMinute').val() ));		
+				
+				var DateEnd = new Date();
+				DateEnd.setMonth     ( parseInt($('#datepicker2').val().substr(0,2), 10) -1   );
+				DateEnd.setDate      ( parseInt($('#datepicker2').val().substr(3,5), 10));
+				DateEnd.setYear      ( parseInt($('#datepicker2').val().substr(6,10)));
+				DateEnd.setHours     ( parseInt( $('#endHour').val() ));
+				DateEnd.setMinutes   ( parseInt( $('#endMinute').val() ));		
+				
+				console.log('Parsed startDate is ' + DateStart);
+				console.log('Parsed endDate is '   + DateEnd);		
+				
+				console.log('startDate is ' + startDate);	
+				console.log('endDate is '   + endDate);	
+				AreaOfInterestBoolean = $('#geo').is(':checked') ? true : false ; 
+				console.log('Value of Area Boolean is ' + AreaOfInterestBoolean);
+				
+				console.log(JSON.stringify(area_list));	
+				
+				//several checks before moving forward
+				if ( $('#Campaign_ID').val() == '' ) 
+					{		
+						alert('Campaign name cannot be empty');
+						check = false;
+					}
+				
+				if (   ((expiry == true) && ( ($('#datepicker').val() == '')||($('#datepicker2').val() == '') || ($('#startHour').val() == '') || ($('#startMinute').val() == '') || ($('#endHour').val() == '') || ($('#endMinute').val() == '') ))   ) 
+					{
+						check = false;
+						alert("Please select a start date and/or an end date");			
+					}
+				if ((DateEnd <= DateStart))
+					{
+						check = false;
+						$('#datepicker').select();
+						$('#datepicker2').select();
+						alert("Please make sure End Date > Start Date");				
+					}		
+				
+				
+				if (check == true) 
+					{
+						//Send campaign parameters to the next page (CreateCampaign_step2.html)
+						sessionStorage.CamID_Session                 = CampaignID;
+						sessionStorage.CamDescription_Session        = CampaignDescription;
+						sessionStorage.onetimeBoolean_Session        = onetime;
+						sessionStorage.expiryBoolean_Session         = expiry;
+						sessionStorage.startDate_Session             = startDate;
+						sessionStorage.endDate_Session               = endDate;
+						sessionStorage.AreaOfInterestBoolean_Session = AreaOfInterestBoolean;
+						sessionStorage.AreaOfInterest_Session        = JSON.stringify(area_list);	
+						sessionStorage.userID_Session                = userID;
+						sessionStorage.WebMercator_Session           = JSON.stringify(area_list_WebMercator);
+						sessionStorage.showResultBoolean			 = showResult;
+						sessionStorage.showAuthorBoolean		 	 = showAuthor;
+						sessionStorage.continuousSubmissionValue	 = continuousSubmissionBoolean;
+						
+						console.log('Session: ' + sessionStorage.CamID_Session);
+						console.log('Session: ' + sessionStorage.CamDescription_Session);
+						console.log('Session: ' + sessionStorage.onetimeBoolean_Session );
+						console.log('Session: ' + sessionStorage.expiryBoolean_Session);
+						console.log('Session: ' + sessionStorage.startDate_Session  );
+						console.log('Session: ' + sessionStorage.endDate_Session );
+						console.log('Session: ' + sessionStorage.AreaOfInterestBoolean_Session);
+						console.log('Session: ' + sessionStorage.AreaOfInterest_Session);
+						console.log('Session: ' + sessionStorage.userID_Session);
+						console.log('Session: ' + sessionStorage.WebMercator_Session);
+						
+						//alert('Now move to next step: Defining questions and transitions');
+						
+						window.location.href = "CreateCampaign_step2.html";
+						
+					}		
+			});  			
+	}
+	
+	  
+	});	
+
+</script>
+
+<script type="text/javascript">
+			  $( function() {
+			    $( "#datepicker" ).datepicker();
+			    $.datepicker.regional['es'] = {
+			    		closeText: "Cerrar",
+			    		prevText: "&#x3C;Ant",
+			    		nextText: "Sig&#x3E;",
+			    		currentText: "Hoy",
+			    		monthNames: [ "enero","febrero","marzo","abril","mayo","junio",
+			    		"julio","agosto","septiembre","octubre","noviembre","diciembre" ],
+			    		monthNamesShort: [ "ene","feb","mar","abr","may","jun",
+			    		"jul","ago","sep","oct","nov","dic" ],
+			    		dayNames: [ "domingo","lunes","martes","miércoles","jueves","viernes","sábado" ],
+			    		dayNamesShort: [ "dom","lun","mar","mié","jue","vie","sáb" ],
+			    		dayNamesMin: [ "D","L","M","X","J","V","S" ],
+			    		weekHeader: "Sm",
+			    		dateFormat: "mm/dd/yy",
+			    		firstDay: 1,
+			    		isRTL: false,
+			    		showMonthAfterYear: false, 	yearSuffix: "" };
+			    	 $.datepicker.setDefaults($.datepicker.regional['es']);
+			  } );  
+</script>
+<script>
+  $( function() {
+    $( "#datepicker2" ).datepicker();
+  } );  
+</script>
+
+</html>

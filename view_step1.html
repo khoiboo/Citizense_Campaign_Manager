@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<!-- Include JS File Here -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<title>Campaign Viewer - Step 1</title>
+	
+	<link rel="stylesheet" href="https://js.arcgis.com/3.18/esri/css/esri.css">
+	
+	<style type="text/css">
+#info {
+        top: 20px;
+        color: #444;
+        height: auto;
+        font-family: arial;
+        right: 20px;
+        margin: 5px;
+        padding: 10px;
+        position: absolute;
+        width: auto;
+        z-index: 40;
+        border: solid 2px #666;
+        border-radius: 4px;
+        background-color: #fff;
+      }
+      html, body, #mapDiv {
+        padding:0;
+        margin:0;
+        height:100%;
+      }
+      button {
+        display: block;
+      }
+</style>
+	<script src="https://js.arcgis.com/3.18/"></script>
+	
+</head>
+
+
+
+<body>
+
+<br><br><br>
+<!--Nav-->
+<nav class="navbar navbar-inverse navbar-fixed-top" style="background: #4c8dc7;">
+    <div class="container">
+        <div class="navbar-header">
+            <!--Part of left-->
+            
+            <div id="stepsUserAuth">
+                <a class="navbar-brand" href="" title="NavApps">
+                    <img src="transparentCitizense.png" alt="Geo-C" height="30px" style="display: inline">                    
+                </a>
+            <span class="navbar-brand steps">                  
+            </span>
+            </div>            
+        </div>
+        <!--Part of right-->
+        <div id="navbar" class="navbar-collapse collapse">            
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>      
+
+<!-- --------------------Left column------------------- -->
+<div id="left" class="col-sm-5 ">
+<div id = "form_step1">
+
+<table>
+  <tr> 
+  		<th> Campaign ID: </th> 
+  		<th> <input type="text" id="Campaign_ID" disabled class="form-control" style="width:50%;"> </th>  
+  </tr>
+  <tr> 
+  		<th> Campaign description:</th> 
+  		<th> <textarea type="text" id="Campaign_Description" disabled class="form-control"style="width:50%;" rows="5" cols="60"></textarea> </th>  
+  </tr>  
+</table>    
+  
+  <input type="checkbox" name="mycheckbox" id="onetime" disabled value="0" /> Campaign to be executed only once? <br>
+  
+  <input type="checkbox" name="mycheckbox" id="expiry" disabled value="0" /> Time period of the campaign <br>
+  
+  <div id="mycheckboxdiv" style="display:none"  >  
+   <!-- Start Date: <input type="text" id="datepicker"><br> -->    
+   <!-- End Date: <input type="text" id="datepicker2"> -->  
+  
+  <table>
+  <tr> 
+  		<th> Start date </th> 
+  		<th> <input type="text" id="datepicker" disabled > </th>  
+  </tr>
+  <tr> 
+  		<th> Start time (format hh:mm)</th> 
+  		<th> <input type="text" id="startHour" disabled size="1"> : <input type="text" id="startMinute" disabled size="1">  </th>  
+  </tr>
+  <tr> 
+  		<th> End date </th> 
+  		<th> <input type="text" id="datepicker2" disabled> </th>  
+  </tr> 
+  <tr> 
+  		<th> End time (format hh:mm) </th> 
+  		<th> <input type="text" id="endHour" disabled size="1"> : <input type="text" id="endMinute" disabled size="1">  </th>  
+  </tr>
+  
+  </table>
+  
+  <style>
+th, td {
+    padding: 5px;
+}
+</style>
+
+<br><br>
+
+<b>Share the results: </b> <input type="checkbox" name="mycheckbox" id="viewResult" /> Tick if you want the public to see the aggregated and anonymized result of this campaign <br>  
+
+<b>Show your name: </b> <input type="checkbox" name="mycheckbox" id="showName" /> Tick if you want to show your first name and portrait picture to the participants <br>  
+
+<b>Continuous submission: </b> <input type="checkbox" name="mycheckbox" id="continuousSubmission" /> Tick if you allow participants to submit continuously (no waiting time in between, usually 1 minute) <br>  
+  
+  </div><br><br><br>    
+  
+</div>
+
+<button id="cancel"     class="btn btn-success " style="margin-bottom: -15px;">Back to Main page</button> <br>     
+
+
+
+</div>
+
+<!-- --------------------Right column------------------- -->
+<div id="right" class="col-sm-7 ">
+
+<input type="checkbox" name="mycheckbox" id="geo" value="0" /> Click here if you want to add some Area of Interest <br>
+
+	<div id="info">
+      <!-- <div>Select a shape then draw on map to add graphic</div> -->
+      <p id="sentence1" style="margin-bottom: 0px;">Select a shape </p>
+      <p id="sentence2" style="margin-bottom: 0px;">then draw on map </p>
+      <p id="sentence3"> to add graphic </p>
+      <button id="Circle"     class="btn btn-block btn-success hiddenfirst" style="margin-bottom: -15px;">Circle</button>      <br> 
+      <button id="Polygon"    class="btn btn-block btn-success hiddenfirst" style="margin-bottom: -15px;">Polygon</button>      <br>
+      
+      <button id="Delete"     class="btn btn-block btn-warning hiddenfirst" style="margin-bottom: -15px;">Delete last shape</button> <br>     
+      <button id="deleteall"  class="btn btn-block btn-danger  hiddenfirst" style="margin-bottom: -15px;">Delete All</button> <br>
+      
+    </div>
+
+    <div id="mapDiv"></div>
+	
+	<button id="nextStep"     class="btn btn-primary " style="margin-bottom: -15px;">Next Part</button> <br>     
+
+</div>
+
+</body>
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+	
+	var config = JSON.parse(sessionStorage.campaign);
+	console.log('Campaign config is ' + JSON.stringify(config));
+	
+	$('#Campaign_ID').val(config.Campaign_ID);
+	//$("#Campaign_ID").prop('disabled', true);
+	
+	$('#Campaign_Description').val(config.Campaign_Description);
+	//$('#Campaign_Description').prop('disabled', true);
+	
+	$('#onetime').prop('disabled', true);
+	if (config.onetime == "true")
+	{
+		console.log('onetime value is true');
+		$('#onetime').prop('checked', true);
+	}
+	
+	
+	$('#expiry').prop('disabled', true);
+	if (config.expiry == "true")
+	{
+		$('#expiry').prop('checked', true);
+		$('#mycheckboxdiv').show();
+		
+		
+		$('#datepicker').val( config.startDate.substring(0,config.startDate.indexOf(" ")) );
+		
+		
+		$('#startHour').val( config.startDate.substring(config.startDate.indexOf(" ")+1, config.startDate.indexOf(" ") +3 ) );
+		
+		
+		$('#startMinute').val( config.startDate.substring(config.startDate.indexOf(" ")+4, config.startDate.indexOf(" ") +6 ) );
+		
+		//---------------------------
+		
+		
+		$('#datepicker2').val( config.endDate.substring(0,config.startDate.indexOf(" ")) );
+		
+		
+		$('#endHour').val( config.endDate.substring(config.endDate.indexOf(" ")+1, config.endDate.indexOf(" ") +3 ) );
+		
+		
+		$('#endMinute').val( config.endDate.substring(config.endDate.indexOf(" ")+4, config.endDate.indexOf(" ") +6 ) );
+		
+		
+	}
+	
+	if (config.showResult == 'true')
+	{
+		$('#viewResult').prop('checked', true);
+	}
+	
+	if (config.showAuthor == 'true')
+	{
+		$('#showName').prop('checked', true);
+	}
+	
+	if (config.continuousSubmission == 'true')
+	{
+		$('#continuousSubmission').prop('checked', true);
+	}
+	
+	$('#geo').prop('disabled', true);
+	if (config.geoBoolean == 'true') $('#geo').prop('checked', true);
+	
+	$('#info').hide();
+	
+	
+	var list = config.PoI_list_WebMercator;
+	console.log('Size of mercator list is ' + list.length);
+	
+	$("#cancel").click(function () {
+            window.location.href = "dashboard.html";	
+        });
+		
+		$("#nextStep").click(function () {
+            window.location.href = "view_step2.html";	
+        });
+	
+	
+	//var str = "{\"geometry\":{\"rings\":[[[-5940.012342596171,4864778.66319376],[-3823.6621218946,4864788.217822297],[-3632.5695511766253,4863464.901770074],[-6030.781313687209,4863488.788341414],[-5940.012342596171,4864778.66319376]]],\"spatialReference\":{\"wkid\":102100,\"latestWkid\":3857}},\"symbol\":{\"color\":[0,0,0,64],\"outline\":{\"color\":[0,0,0,255],\"width\":1,\"type\":\"esriSLS\",\"style\":\"esriSLSSolid\"},\"type\":\"esriSFS\",\"style\":\"esriSFSSolid\"}}";
+	//var str2 = '{"geometry":{"rings":[[[-11820.88620680747,4862369.225640749],[-7635.958908199711,4862311.897869535],[-7330.210795059418,4861012.468388689],[-12222.180605304105,4860974.249874546],[-11820.88620680747,4862369.225640749]]],"spatialReference":{"wkid":102100,"latestWkid":3857}},"symbol":{"color":[0,0,0,64],"outline":{"color":[0,0,0,255],"width":1,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}';
+	//var str3 = '{"geometry":{"rings":[[[-3164.392753522927,4861872.384956895],[-2495.568756028535,4863496.671807953],[-1998.7280721755596,4861891.494213967],[-3412.8130954494136,4862999.831124101],[-1750.307730249071,4862846.957067531],[-3164.392753522927,4861872.384956895]]],"spatialReference":{"wkid":102100,"latestWkid":3857}},"symbol":{"color":[0,0,0,64],"outline":{"color":[0,0,0,255],"width":1,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}';
+	//var shapeObj = JSON.parse(str);
+	//var array = [JSON.parse(str),JSON.parse(str2),JSON.parse(str3)];
+	var array = [];
+	
+	for (var i=0;i<list.length;i++)
+		array.push( JSON.parse(list[i]) );
+	
+	var map, tb;
+	
+	dojo.require("esri.toolbars.draw");
+	require([
+	   	  "esri/map", "esri/toolbars/draw", "esri/symbols/SimpleFillSymbol",
+	   	  "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
+	   	  "esri/symbols/PictureFillSymbol", "esri/symbols/CartographicLineSymbol", 
+	   	  "esri/graphic", "esri/geometry/webMercatorUtils",
+	   	  "esri/Color", "dojo/dom", "dojo/on", "dojo/domReady!"
+	   	], function(
+	   	  Map, Draw,SimpleFillSymbol,
+	   	  SimpleMarkerSymbol, SimpleLineSymbol,
+	   	  PictureFillSymbol, CartographicLineSymbol, 
+	   	  Graphic, webMercatorUtils,
+	   	  Color, dom, on
+	   	) {
+	   	  map = new Map("mapDiv", {
+	   	    basemap: "streets",	   	 
+	   	    center: [-0.044734054565, 39.98776978688296],
+	   	    zoom: 13
+	   	  });
+	   	  
+	   	  //var myGraphic = new Graphic( shapeObj );
+	   	  //console.log( JSON.stringify(myGraphic.toJson()) );
+	   	  
+	   	  map.on("load", initToolbar);
+	   	  
+	   	  //customInitialize(myGraphic, map);
+	   	  //map.graphics.add(myGraphic);
+	   	  
+
+	   	  // markerSymbol is used for point and multipoint, see http://raphaeljs.com/icons/#talkq for more examples
+	   	  var markerSymbol = new SimpleMarkerSymbol();
+	   	  markerSymbol.setPath("M16,4.938c-7.732,0-14,4.701-14,10.5c0,1.981,0.741,3.833,2.016,5.414L2,25.272l5.613-1.44c2.339,1.316,5.237,2.106,8.387,2.106c7.732,0,14-4.701,14-10.5S23.732,4.938,16,4.938zM16.868,21.375h-1.969v-1.889h1.969V21.375zM16.772,18.094h-1.777l-0.176-8.083h2.113L16.772,18.094z");
+	   	  markerSymbol.setColor(new Color("#00FFFF"));
+
+	   	  // lineSymbol used for freehand polyline, polyline and line. 
+	   	  var lineSymbol = new CartographicLineSymbol(
+	   	    CartographicLineSymbol.STYLE_SOLID,
+	   	    new Color([255,0,0]), 10, 
+	   	    CartographicLineSymbol.CAP_ROUND,
+	   	    CartographicLineSymbol.JOIN_MITER, 5
+	   	  );
+
+	   	  // fill symbol used for extent, polygon and freehand polygon, use a picture fill symbol
+	   	  // the images folder contains additional fill images, other options: sand.png, swamp.png or stiple.png
+	   	  var fillSymbol = new SimpleFillSymbol();
+
+	   	  function initToolbar() {
+	   	    tb = new Draw(map);
+	   	    tb.on("draw-end", addGraphic);
+	   	    tb.on("draw-end", customInitialize(array));
+	   	    
+
+	   	    // event delegation so a click handler is not
+	   	    // needed for each individual button
+	   	    on(dom.byId("info"), "click", function(evt) {
+	   	      if ( evt.target.id === "info" || evt.target.id.includes('sentence') ) {
+	   	        return;
+	   	      }
+	   	      
+	   	      if ( evt.target.id === "deleteall" ) {
+	   	    	  map.graphics.clear();
+	   	    	  for (var i = area_list.length; i > 0; i--) {
+	   	    		  
+	   	    		  area_list.pop();
+	   	    		  
+	   	    		 }	    		  
+	   	    	  console.log('Size of area array is ' + area_list.length);
+	   	    	  console.log( JSON.stringify(area_list) );
+	   	    	  return;
+	   	        }
+	   	      
+	   	      if ( evt.target.id === "Delete" ) {
+	   	    	  map.graphics.remove(map.graphics.graphics[map.graphics.graphics.length - 1]);
+	   	    	  area_list.splice(area_list.length-1,1);
+	   	    	  console.log('Size of area array is ' + area_list.length);
+	   	    	  console.log( JSON.stringify(area_list) );
+	   	    	  return;
+	   	        }
+	   	      var tool = evt.target.id.toLowerCase();
+	   	      map.disableMapNavigation();
+	   	      tb.activate(tool);
+	   	    });
+	   	  }
+	   	  
+	   	  function customInitialize(arrayinput)
+	   	  {
+	   		  for (var i =0;i<arrayinput.length;i++)
+	   			  {
+	   				var newGraphic = new Graphic(arrayinput[i]);
+	   				map.graphics.add(newGraphic);
+	   			  }
+	   		
+	   	    
+	   		  
+	   	  }
+
+	   	  function addGraphic(evt) {
+	   	    //deactivate the toolbar and clear existing graphics 
+	   	    tb.deactivate(); 
+	   	    map.enableMapNavigation();
+
+	   	    // figure out which symbol to use
+	   	    var symbol;
+	   	    if ( evt.geometry.type === "point" || evt.geometry.type === "multipoint") {
+	   	      symbol = markerSymbol;
+	   	    } else if ( evt.geometry.type === "line" || evt.geometry.type === "polyline") {
+	   	      symbol = lineSymbol;
+	   	    }
+	   	    else {
+	   	      symbol = fillSymbol;
+	   	    }
+	   	    
+	   	    var graphic_converted = webMercatorUtils.webMercatorToGeographic(evt.geometry);
+	   	    
+	   	    var newGraphic = new Graphic(evt.geometry, symbol);
+	   	    map.graphics.add(newGraphic);
+	   	    area_list.push(JSON.stringify(graphic_converted.toJson()));
+	   	    //alert(JSON.stringify(graphic_converted.toJson()));
+	   	    console.log('Size of area array is ' + area_list.length);   
+	   	    console.log( JSON.stringify(area_list) );
+	   	  }
+	   	});
+	
+	
+});
+</script>
+
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<!-- Include JS File Here -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<title>Campaign Viewer - Step 2</title>
+	
+	<!-- Import quesType definitions -->
+	<script src="quesTypeUpdated.js"></script>
+	
+	<script src="cytoscape.js"></script>
+	
+	<link rel="stylesheet" href="https://js.arcgis.com/3.18/esri/css/esri.css">
+	
+	<style type="text/css">
+
+      html, body, #mapDiv {
+        padding:0;
+        margin:0;
+        height:100%;
+      }
+      button {
+        display: block;
+      }
+	  
+	  #cy {
+  border: solid;
+  border-width: 1;
+  height: 500px;
+}
+</style>
+	
+</head>
+
+
+
+<body>
+
+<br><br><br>
+<!--Nav-->
+<nav class="navbar navbar-inverse navbar-fixed-top" style="background: #4c8dc7;">
+    <div class="container">
+        <div class="navbar-header">
+            <!--Part of left-->
+            
+            <div id="stepsUserAuth">
+                <a class="navbar-brand" href="" title="NavApps">
+                    <img src="geoc.png" alt="Geo-C" height="30px" style="display: inline">                    
+                </a>
+            <span class="navbar-brand steps">                  
+            </span>
+            </div>            
+        </div>
+        <!--Part of right-->
+        <div id="navbar" class="navbar-collapse collapse">            
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>   
+
+<!-- --------------------Small column------------------- -->
+<div id="left" class="col-sm-2 ">
+
+<button id="cancel"     class="btn btn-warning " style="margin-bottom: -15px;">Cancelar</button> <br>  
+</div>
+   
+
+<!-- --------------------Left column------------------- -->
+<div id="left" class="col-sm-4 ">
+
+<div id="commonDivEdit"  class = " begin_step2 ">	  
+			  
+			  Texto de la pregunta:<br>  <input type="text" class = "common_input form-control" id="commonEdit_QuesText" disabled ><br>
+			  
+			  Figura para esta pregunta:<br>  <input type="text" class = "common_input form-control" id="commonEdit_QuesPicURL"  disabled ><br>
+			  
+			  		
+			
+</div>
+
+<!-- Form FreeTextSingle -->
+      		<div id="FreeTextSingle_Form"  class = "begin_step2 question FreeTextSingle edit_form">
+			<br><br>			
+			
+			<button id = "FreeTextSingle_Cancel"  class="btn btn-primary button-OK">  OK</font> </button>
+			
+			</div>
+			
+			<!-- Form FreeTextMulti -->
+			<div id="FreeTextMulti_Form"            class = "begin_step2 question FreeTextMulti edit_form">
+			<br><br>					
+			
+			<br>
+			
+			<button id = "FreeTextMulti_Cancel" class="btn btn-primary button-OK">  OK</font> </button>			
+			
+			</div>
+			
+			<!-- Form MultipleChoiceSingle -->
+			<div id="MultipleChoiceSingle_Form"     class = "begin_step2 question MultipleChoiceSingle edit_form">
+			<br><br>									
+			
+			<br>
+			
+			<button id = "MultipleChoiceSingle_Cancel" class="btn btn-primary button-OK">  OK</font> </button>
+			
+			</div>
+			
+			<!-- Form MultipleChoiceMulti -->
+			<div id="MultipleChoiceMulti_Form"      class = "begin_step2 question MultipleChoiceMulti edit_form">
+			<br><br>					
+			<br>
+			
+			<button id = "MultipleChoiceMulti_Cancel" class="btn btn-primary button-OK">  OK</font> </button>
+			
+			</div>
+			
+			<!-- Form AudioSensor -->
+			<div id="AudioSensor_Form"              class = "begin_step2 question AudioSensor edit_form">
+			<br><br>			
+			
+			<button id = "AudioSensor_Cancel"  class="btn btn-primary button-OK">  OK</font> </button>
+			
+			</div>
+			
+			<!-- Form TextDisplay -->
+			<div id="TextDisplay_Form"           class = "begin_step2 question TextDisplay edit_form">
+			<br><br>			
+			
+			<button id = "TextDisplay_Cancel"  class="btn btn-primary button-OK">  OK</font> </button>
+			
+			</div>
+			
+			<!-- Form FreeNumericSingle -->
+      		<div id="FreeNumericSingle_Form"  class = "begin_step2 question FreeNumericSingle edit_form">
+			<br><br>		
+			
+			<button id = "FreeNumericSingle_Cancel"  class="btn btn-primary button-OK">  OK</font> </button>
+			
+			</div>
+			
+			<!-- Form ContRange -->
+      		<div id="ContRange_Form"  class = "begin_step2 question ContRange edit_form">
+			<br><br>
+			  
+			  <b>Minimum value</b> of the range:<br>	<input type="text" class = "ContRange_input form-control" id="ContRange_min" disabled><br> 
+			  <b>Maximum value</b> of the range:<br>	<input type="text" class = "ContRange_input form-control" id="ContRange_max" disabled><br>
+			  
+			  
+			
+			
+			<button id = "ContRange_Cancel"  class="btn btn-primary button-OK">  OK</font> </button>
+			
+			</div>
+			
+			
+</div>
+
+<!-- --------------------Right column------------------- -->
+<div class="col-sm-6">
+      
+		<br>
+        <!-- graph : start -->
+        <div class="panel panel-primary">
+          <div class="panel-heading" style="background-color: #4c8dc7;">Área del gráfico</div>
+		  
+		  <button id = "help_graph_button" class="btn btn-info" > <span class="glyphicon glyphicon-pushpin"></span> Help graph </button>
+          <div class="panel-body">
+            <div id="cy"></div>
+            <br>
+           
+          </div>            
+        
+        </div>
+        <!-- graph : end -->
+      </div> 
+
+</body>
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+	$("#cancel").click(function () {
+            window.location.href = "dashboard_es.html";	
+        });
+		
+		$('.begin_step2').hide();
+		
+		const FreeTextSingle_const = 'FreeTextSingle';
+		const FreeTextMulti_const = 'FreeTextMulti';
+		const MultipleChoiceSingle_const = 'MultipleChoiceSingle';
+		const MultipleChoiceMulti_const = 'MultipleChoiceMulti';
+		const ContRange_const = 'ContRange';
+		const AudioSensor_const = 'AudioSensor';
+		const TextDisplay_const = 'TextDisplay';
+		const FreeNumericSingle_const        = 'FreeNumericSingle';
+		const UploadPhoto_const				 = 'UploadPhoto';	
+		const DateInput_const				 = 'DateInput';
+		const TimeInput_const				 = 'TimeInput';		
+		const WifiSensor_const				 = 'WifiSensor';
+	
+	var config = JSON.parse(sessionStorage.campaign);
+	console.log('Campaign config is ' + JSON.stringify(config));		
+		
+		var StartQues                 = config.startQuestion;
+		var Question_Array = [];
+		var Campaign_Workflow = [];
+		var geoBoolean                = config.geoBoolean;
+		var PoI = [];
+		var question_number = 1;
+		var subcomponent_count = 0;
+		var geo_component = 0;	
+		var ID_of_edited_question = '';	
+		var userID                    = sessionStorage.getItem('username');
+		console.log('UserID is ' + userID);
+		
+		var nodeSequence = [];
+		
+		var cyto_config = JSON.stringify(config.cytoscape);
+		
+		//--------------initial print
+		console.log('-------------Initial print--------------');		
+		console.log('start ques is ' + StartQues);		
+		console.log('cyto_config is ' + cyto_config);
+		
+		for (var i=0; i < config.Question_Array.length; i++)
+		{
+			if (config.Question_Array[i].quesType == FreeTextSingle_const)
+				{
+				var FreeTextSingle_obj         = new FreeTextSingle('','',[]);
+					FreeTextSingle_obj.deserialize(config.Question_Array[i]);
+					Question_Array.push(FreeTextSingle_obj);
+				}
+			else if (config.Question_Array[i].quesType == FreeTextMulti_const)
+			{
+				var FreeTextMulti_obj          = new FreeTextMulti('','',[],[]);
+				FreeTextMulti_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(FreeTextMulti_obj);
+			}
+			else if (config.Question_Array[i].quesType == MultipleChoiceSingle_const)
+			{
+				var MultipleChoiceSingle_obj   = new MultipleChoiceSingle('','',[],[]);
+				MultipleChoiceSingle_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(MultipleChoiceSingle_obj);
+			}
+			else if (config.Question_Array[i].quesType == MultipleChoiceMulti_const)
+			{
+				var MultipleChoiceMulti_obj    = new MultipleChoiceMulti('','',[],[]);
+				MultipleChoiceMulti_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(MultipleChoiceMulti_obj);
+			}
+			else if (config.Question_Array[i].quesType == AudioSensor_const)
+			{
+				var AudioSensor_obj            = new AudioSensor('','',[]);
+				AudioSensor_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(AudioSensor_obj);
+			}
+			else if (config.Question_Array[i].quesType == TextDisplay_const)
+			{
+				var TextDisplay_obj            = new TextDisplay('','',[]);
+				TextDisplay_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(TextDisplay_obj);				
+			}
+			else if (config.Question_Array[i].quesType == FreeNumericSingle_const)
+			{
+				var FreeNumericSingle_obj            = new FreeNumericSingle('','',[]);
+				FreeNumericSingle_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(FreeNumericSingle_obj);				
+			}
+			else if (config.Question_Array[i].quesType == ContRange_const)
+			{
+				var ContRange_obj            = new ContRange('','',[],[]);
+				ContRange_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(ContRange_obj);				
+			}
+			else if (config.Question_Array[i].quesType == UploadPhoto_const)
+			{
+				var UploadPhoto_obj			= new UploadPhoto('','',[],[]);
+				UploadPhoto_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(UploadPhoto_obj);					
+			}
+			else if (config.Question_Array[i].quesType == DateInput_const)
+			{
+				var DateInput_obj			= new DateInput('','',[],[]);
+				DateInput_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(DateInput_obj);				
+			}
+			else if (config.Question_Array[i].quesType == TimeInput_const)
+			{
+				var TimeInput_obj			= new TimeInput('','',[],[]);
+				TimeInput_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(TimeInput_obj);					
+			}	
+			else if (config.Question_Array[i].quesType == WifiSensor_const)
+			{
+				var WifiSensor_obj			= new WifiSensor('','',[],[]);
+				WifiSensor_obj.deserialize(config.Question_Array[i]);
+				Question_Array.push(WifiSensor_obj);					
+			}
+			
+			
+		}
+		console.log('Size of the questionArray is ' + Question_Array.length);
+	console.log('Content of the questionArray is ' + JSON.stringify(Question_Array));
+	
+	var flow_obj = config.workflow;
+		
+		for (var i = 0;i < flow_obj.length; i++)
+		{
+			var condition_array = [];
+			for (var j = 0;j< flow_obj[i].Condition.length;j++)
+				{
+					var branch = new Branch('','');
+					branch.deserialize(flow_obj[i].Condition[j]);
+					console.log(branch.getExpression());
+					console.log(branch.getNext());
+					condition_array.push(branch);
+					console.log('Content of condition_array ' + JSON.stringify(condition_array));
+				}
+			var wf_elem = new Workflow_Element(flow_obj[i].QuesID,condition_array);
+			Campaign_Workflow.push(wf_elem);
+			console.log('SIZE OF array_flow is ' + Campaign_Workflow.length);		
+		}
+		console.log('-----------------------------');		
+		
+		console.log(JSON.stringify(Campaign_Workflow));
+		
+		var cy = window.cy = cytoscape({
+		    container: document.getElementById('cy'),
+
+		    zoom: 1.5,
+			wheelSensitivity: 0.05,
+			minZoom: 1,
+		    maxZoom: 20,
+
+		    // panningEnabled: false,
+		    //boxSelectionEnabled: true,
+		    //autounselectify: false,
+		    //selectionType: 'additive',
+		    //autoungrabify: true,		    
+
+		    style: [{
+                selector: 'node',
+                style: {                          
+                    label: 'data(id)',
+                    "text-valign":"center",
+                    "text-halign":"center",
+                }
+            },{
+                selector: 'node.highlight',
+                style: {
+                    'border-color': 'red',
+                    'border-width': '4px'
+                }
+            },{
+                selector: 'node.normal',
+                style: {
+              	  label: 'data(id)',
+                    "text-valign":"center",
+                    "text-halign":"center"
+                }
+            },
+
+            {
+				selector: 'edge',
+				style: {
+					'width': 2,
+					'target-arrow-shape': 'triangle',
+					'line-color': '#9dbaea',
+					'target-arrow-color': '#9dbaea',
+					'curve-style': 'bezier'
+				}
+			},{
+				selector: 'edge.highlight',
+				style: {
+					'width': 3,
+					'target-arrow-shape': 'triangle',
+					'line-color': 'green',
+					'target-arrow-color': '#9dbaea',
+					'curve-style': 'bezier'
+				}
+			} 		      
+		    ],
+
+		    elements: {
+		      //selectable: false, 
+		      grabbable: false,
+		      nodes: [], // nodes
+		      edges: [] // edges
+		    } // elements
+		  }); // cytoscape
+		  
+		cy.resize();		  
+		
+		var JsonObject = config.cytoscape;
+		
+		var nodenumber = JsonObject.elements.nodes.length;
+		var edgenumber = JsonObject.elements.edges.length;
+		
+		for (var i=0;i<nodenumber;i++)
+			{
+				cy.add({
+				    group: "nodes",
+				    data: { id: JsonObject.elements.nodes[i].data.id },
+				    position: { x: JsonObject.elements.nodes[i].position.x , y: JsonObject.elements.nodes[i].position.y  },
+				    classes: JsonObject.elements.nodes[i].classes,
+				});					
+			}
+		
+		for (var i=0;i<edgenumber;i++)
+			{		
+				cy.add({
+			  	    group: "edges",
+			  	    data: { id: JsonObject.elements.edges[i].data.id, 
+			  	    	source: JsonObject.elements.edges[i].data.source, 
+			  	    	target: JsonObject.elements.edges[i].data.target }
+			  	});		
+			}
+			
+		//---------------------------------------------------Hover on NODE
+	    cy.on('mousemove','node', function(event){
+	        var node = event.cyTarget;
+	        var sourceName = node.id();        
+	        
+	        var content = '';
+	        var questionType = '';
+	        
+	        for (var i=0;i<Question_Array.length;i++)
+	      	  {
+	      	  	if (Question_Array[i].getID() == sourceName)
+	      	  		{
+			      	  	content = Question_Array[i].getLabel()[0];
+			      	  	questionType = Question_Array[i].getType();	      	  		
+	      	  		}	      	  		
+	      	  }
+	        $('#' + sourceName).remove();
+	        $('<div id="' + sourceName + '"> This question is: ' + content + ' , of type ' + questionType + '</div>').appendTo("#cy");        
+
+	        var x=event.cyPosition.x + $(window).width()/2 ;
+	        var y=event.cyPosition.y;            
+	            
+	});
+	    cy.on('mouseout','node', function(event){
+	  	  var node = event.cyTarget;
+	        var sourceName = node.id();
+	        
+				var content = '';
+	        
+	        for (var i=0;i<Question_Array.length;i++)
+	      	  {
+	      	  	if (Question_Array[i].getID() == sourceName)
+	      	  		content = Question_Array[i].getLabel()[0];
+	      	  }
+	        
+	      $('#' + sourceName).remove();
+	  	  
+	    });
+		
+		//-----------------------------------------------Click on NODE
+		cy.on('click', 'node', { foo: 'bar' }, function(evt){
+		
+			$('.subcomponent').remove();
+			$('.edit_form').hide();
+
+			  var node = evt.cyTarget;
+			  console.log( 'tapped ' + node.id() );
+			  
+			  ID_of_edited_question = node.id();
+			  
+			   var question =  null;
+				for (var i=0;i<Question_Array.length;i++)
+					  {
+					  	if (Question_Array[i].getID() === ID_of_edited_question) 
+					  		{    		  		
+					  			question = Question_Array[i];    		  		
+					  		}   		  	
+					  }
+				  console.log(question.getID() + ' ' + question.getType());
+				  
+				  if (question.getType() == FreeTextSingle_const)
+					  {
+					  	$('#commonDivEdit').show();
+					  	$('#FreeTextSingle_Form').show();
+					  	
+					  	$('#commonEdit_QuesText').val(  question.getLabel()[0]   );
+					  	$('#commonEdit_QuesPicURL').val( question.getLabel()[1]   );
+						if ( question.getLabel()[1] == '' ) $('#removePic').hide();
+					  	//$('#FreeTextSingle_Form_QuesAudio').val( question.getLabel()[2]   );
+					  	
+					  }
+				  else if (question.getType() == FreeTextMulti_const)
+					  {			  	
+					  	var subcomponent_array = [];
+					  	var size = question.getSubcomponent().length;
+					  	subcomponent_count = size;
+					  	console.log('The size of subcomponent is ' + size);
+					  	console.log('The current question selected to be edited is ' + ID_of_edited_question);
+					  	
+					  	$('#commonDivEdit').show();
+					  	$('#FreeTextMulti_Form').show();
+					  	
+					  	$('#commonEdit_QuesText').val(  question.getLabel()[0]   );
+					  	$('#commonEdit_QuesPicURL').val( question.getLabel()[1]   );
+						if ( question.getLabel()[1] == '' ) $('#removePic').hide();						  	
+					  	
+					  	for (var i=0;i< size;i++)
+					  		{
+					  			//Add a new div
+								$('<div id="' + ID_of_edited_question + '_subcomponent_div' + i + '" class = "subcomponent_FreeTextMulti hover_action subcomponent" </div>').appendTo("#commonDivEdit");
+							
+								//Add text "Sub-Component" to the newly-created div
+								$('<p id ="' + ID_of_edited_question + '_subcomponent_text_' + i + '" class = "subcomponent_FreeTextMulti">').text('Sub-question').appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);
+								
+								//Add textfield to the newly-created div
+								$('<input disabled type="text" class = "subcomponent_FreeTextMulti" id="' + ID_of_edited_question + '_subcomponent_' + i + '"></input>' ).appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);
+								$('#' + ID_of_edited_question + '_subcomponent_' + i).val( question.getSubcomponent()[i] );
+								
+								//Add REMOVE button to the newly-created div
+								$('<button id="Delete_subcomponent_' + i + '" type="button" class="btn btn-danger" style="display: none;"> <span class="glyphicon glyphicon-remove-sign"></span> Remove </button>')
+								.click(function(){
+									
+									var thisButton_ID = $(this).attr('id');
+									console.log(thisButton_ID);
+									var subcomponent_index = thisButton_ID.substring(thisButton_ID.lastIndexOf('_')+1, thisButton_ID.length );
+									console.log(subcomponent_index);
+									$('#' + ID_of_edited_question + '_subcomponent_div' + subcomponent_index).remove();
+									//subcomponent_count--;
+												              
+						            })
+								.appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);					  			
+					  		}				  
+					  }
+				  else if (question.getType() == MultipleChoiceSingle_const)
+					  {
+					  	var subcomponent_array = [];
+					  	var size = question.getSubcomponent().length;
+					  	subcomponent_count = size;
+					  	console.log('The size of subcomponent is ' + size);
+					  	console.log('The current question selected to be edited is ' + ID_of_edited_question);
+					  	
+					  	$('#commonDivEdit').show();
+					  	$('#MultipleChoiceSingle_Form').show();
+					  	
+					  	$('#commonEdit_QuesText').val(  question.getLabel()[0]   );
+					  	$('#commonEdit_QuesPicURL').val( question.getLabel()[1]   );
+						if ( question.getLabel()[1] == '' ) $('#removePic').hide();	  					  	
+					  	
+					  	for (var i=0;i< size;i++)
+					  		{
+					  			//Add a new div
+								$('<div id="' + ID_of_edited_question + '_subcomponent_div' + i + '" class = "subcomponent_MultipleChoiceSingle hover_action subcomponent" </div>').appendTo("#commonDivEdit");
+							
+								//Add text "Sub-Component" to the newly-created div
+								$('<p id ="' + ID_of_edited_question + '_subcomponent_text_' + i + '" class = "subcomponent_MultipleChoiceSingle">').text('Option').appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);
+								
+								//Add textfield to the newly-created div
+								$('<input disabled type="text" class = "subcomponent_MultipleChoiceSingle" id="' + ID_of_edited_question + '_subcomponent_' + i + '"></input>' ).appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);
+								$('#' + ID_of_edited_question + '_subcomponent_' + i).val( question.getSubcomponent()[i] );
+								
+								//Add REMOVE button to the newly-created div
+								$('<button id="Delete_subcomponent_' + i + '" type="button" class="btn btn-danger" style="display: none;"> <span class="glyphicon glyphicon-remove-sign"></span> Remove </button>')
+								.click(function(){
+									
+									var thisButton_ID = $(this).attr('id');
+									console.log(thisButton_ID);
+									var subcomponent_index = thisButton_ID.substring(thisButton_ID.lastIndexOf('_')+1, thisButton_ID.length );
+									console.log(subcomponent_index);
+									$('#' + ID_of_edited_question + '_subcomponent_div' + subcomponent_index).remove();
+									//subcomponent_count--;
+												              
+						            })
+								.appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);
+					  			
+					  		}
+					  
+					  }
+				  else if (question.getType() == MultipleChoiceMulti_const)
+					  {
+							  var subcomponent_array = [];
+							  	var size = question.getSubcomponent().length;
+							  	subcomponent_count = size;
+							  	console.log('The size of subcomponent is ' + size);
+							  	console.log('The current question selected to be edited is ' + ID_of_edited_question);
+							  	
+							  	$('#commonDivEdit').show();
+							  	$('#MultipleChoiceMulti_Form').show();
+							  	
+							  	$('#commonEdit_QuesText').val(  question.getLabel()[0]   );
+								$('#commonEdit_QuesPicURL').val( question.getLabel()[1]   );
+								if ( question.getLabel()[1] == '' ) $('#removePic').hide();	  	
+							  	
+							  	
+							  	for (var i=0;i< size;i++)
+							  		{
+							  			//Add a new div
+										$('<div id="' + ID_of_edited_question + '_subcomponent_div' + i + '" class = "subcomponent_MultipleChoiceMulti hover_action subcomponent" </div>').appendTo("#commonDivEdit");
+									
+										//Add text "Sub-Component" to the newly-created div
+										$('<p id ="' + ID_of_edited_question + '_subcomponent_text_' + i + '" class = "subcomponent_MultipleChoiceMulti">').text('Sub-Component').appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);
+										
+										//Add textfield to the newly-created div
+										$('<input disabled type="text" class = "subcomponent_MultipleChoiceMulti" id="' + ID_of_edited_question + '_subcomponent_' + i + '"></input>' ).appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);
+										$('#' + ID_of_edited_question + '_subcomponent_' + i).val( question.getSubcomponent()[i] );
+										
+										//Add REMOVE button to the newly-created div
+										$('<button id="Delete_subcomponent_' + i + '" type="button" class="btn btn-danger" style="display: none;"> <span class="glyphicon glyphicon-remove-sign"></span> Remove </button>')
+										.click(function(){
+											
+											var thisButton_ID = $(this).attr('id');
+											console.log(thisButton_ID);
+											var subcomponent_index = thisButton_ID.substring(thisButton_ID.lastIndexOf('_')+1, thisButton_ID.length );
+											console.log(subcomponent_index);
+											$('#' + ID_of_edited_question + '_subcomponent_div' + subcomponent_index).remove();
+											//subcomponent_count--;
+														              
+								            })
+										.appendTo("#" + ID_of_edited_question + '_subcomponent_div' + i);
+							  			
+							  		}			  
+					  }
+				  else if (question.getType() == AudioSensor_const)
+				  		{
+							  	$('#commonDivEdit').show();
+							  	$('#AudioSensor_Form').show();
+						  	
+						  		$('#commonEdit_QuesText').val(  question.getLabel()[0]   );
+								$('#commonEdit_QuesPicURL').val( question.getLabel()[1]   );
+								if ( question.getLabel()[1] == '' ) $('#removePic').hide();	  
+				 		}	
+				  else if (question.getType() == TextDisplay_const)
+				  {
+					  	$('#commonDivEdit').show();
+					  	$('#TextDisplay_Form').show();
+					  	
+					  	$('#commonEdit_QuesText').val(  question.getLabel()[0]   );
+						$('#commonEdit_QuesPicURL').val( question.getLabel()[1]   );
+						if ( question.getLabel()[1] == '' ) $('#removePic').hide();	  
+					  	
+					  }
+				  else if (question.getType() == FreeNumericSingle_const)
+				  {
+					  	$('#commonDivEdit').show();
+					  	$('#FreeNumericSingle_Form').show();
+						console.log('Here is a FreeNumericSingle ques');
+					  	
+					  	$('#commonEdit_QuesText').val(  question.getLabel()[0]   );
+						$('#commonEdit_QuesPicURL').val( question.getLabel()[1]   );
+						if ( question.getLabel()[1] == '' ) $('#removePic').hide();	  
+					  	
+					  }
+				  else if (question.getType() == ContRange_const)
+				  {
+				  
+						console.log('here is a ContRange question');
+				  
+						
+					  	$('#commonDivEdit').show();
+						console.log('commonDivEdit showed');
+					  	$('#ContRange_Form').show();
+					  	
+					  	$('#commonEdit_QuesText').val(  question.getLabel()[0]   );
+						$('#commonEdit_QuesPicURL').val( question.getLabel()[1]   );
+						if ( question.getLabel()[1] == '' ) $('#removePic').hide();	  
+					  	
+					  	$('#ContRange_min').val (question.getSubcomponent()[0]);
+					  	$('#ContRange_max').val (question.getSubcomponent()[1]);
+					  	
+					  }
+			  
+			  
+			  $('#selection').val(node.id());
+			  
+			  question = null;
+		
+		});
+		
+		$(".button-OK").click(function () {
+            
+				$('.begin_step2').hide();
+        });
+	
+	
+});
+</script>
+
+</html>

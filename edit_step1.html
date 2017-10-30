@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<!-- Include JS File Here -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<title>Campaign Viewer - Step 1</title>
+	
+	<link rel="stylesheet" href="https://js.arcgis.com/3.18/esri/css/esri.css">
+	
+	<!-- Import quesType definitions -->
+	<script src="quesTypeUpdated.js"></script>
+	
+	<style type="text/css">
+#info {
+        top: 20px;
+        color: #444;
+        height: auto;
+        font-family: arial;
+        right: 20px;
+        margin: 5px;
+        padding: 10px;
+        position: absolute;
+        width: auto;
+        z-index: 40;
+        border: solid 2px #666;
+        border-radius: 4px;
+        background-color: #fff;
+      }
+      html, body, #mapDiv {
+        padding:0;
+        margin:0;
+        height:100%;
+      }
+      button {
+        display: block;
+      }
+</style>
+	<script src="https://js.arcgis.com/3.18/"></script>
+	
+</head>
+
+
+
+<body>
+
+<br><br><br>
+<!--Nav-->
+<nav class="navbar navbar-inverse navbar-fixed-top" style="background: #4c8dc7;">
+    <div class="container">
+        <div class="navbar-header">
+            <!--Part of left-->
+            
+            <div id="stepsUserAuth">
+                <a class="navbar-brand" href="" title="NavApps">
+                    <img src="transparentCitizense.png" alt="Geo-C" height="30px" style="display: inline">                    
+                </a>
+            <span class="navbar-brand steps">                  
+            </span>
+            </div>            
+        </div>
+        <!--Part of right-->
+        <div id="navbar" class="navbar-collapse collapse">            
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>      
+
+<!-- --------------------Left column------------------- -->
+<div id="left" class="col-sm-5 ">
+<div id = "form_step1">
+
+<table>
+  <tr> 
+  		<th> Campaign ID: </th> 
+  		<th> <input type="text" id="Campaign_ID" disabled class="form-control" style="width:50%;"> </th>  
+  </tr>
+  <tr> 
+  		<th> Campaign description:</th> 
+  		<th> <textarea type="text" id="Campaign_Description"  class="form-control"style="width:50%;" rows="5" cols="60"></textarea> </th>  
+  </tr>  
+</table>    
+  
+  <b>Mode of completion: </b> <input type="checkbox" name="mycheckbox" id="onetime" value="0" /> Tick if the campaign can only be answered once per participant. <br>
+  
+  <b>Time period: </b> <input type="checkbox" name="mycheckbox" id="expiry" value="0" /> Tick if the campaign should only be available in a specific time period <br>
+  
+  <div id="mycheckboxdiv" style="display:none"  >  
+   <!-- Start Date: <input type="text" id="datepicker"><br> -->    
+   <!-- End Date: <input type="text" id="datepicker2"> -->  
+  
+  <table>
+  <tr> 
+  		<th> Start date </th> 
+  		<th> <input type="text" id="datepicker"  > </th>  
+  </tr>
+  <tr> 
+  		<th> Start time (format hh:mm)</th> 
+  		<th> <input type="text" id="startHour"  size="1"> : <input type="text" id="startMinute"  size="1">  </th>  
+  </tr>
+  <tr> 
+  		<th> End date </th> 
+  		<th> <input type="text" id="datepicker2" > </th>  
+  </tr> 
+  <tr> 
+  		<th> End time (format hh:mm) </th> 
+  		<th> <input type="text" id="endHour"  size="1"> : <input type="text" id="endMinute"  size="1">  </th>  
+  </tr>
+  
+  </table>
+  
+  <style>
+th, td {
+    padding: 5px;
+}
+</style>
+  
+  </div><br>
+
+<b>Share the results: </b> <input type="checkbox" name="mycheckbox" id="viewResult" /> Tick if you want the public to see the aggregated and anonymized result of this campaign <br>  
+
+<b>Show your name: </b> <input type="checkbox" name="mycheckbox" id="showName" /> Tick if you want to show your first name and portrait picture to the participants <br>     
+
+<b>Continuous submission: </b> <input type="checkbox" name="mycheckbox" id="continuousSubmission" /> Tick if you allow participants to submit continuously (no waiting time in between, usually 1 minute) <br>  
+  
+</div>
+<br><br>
+<button id="cancel"     class="btn btn-warning " >Cancel</button> 
+
+<button id = "update"   class="btn btn-primary btn-success active" ><b>  Update Campaign <span class="glyphicon glyphicon-ok"></span>  </b> </button> 
+
+
+</div>
+
+<!-- --------------------Right column------------------- -->
+<div id="right" class="col-sm-7 ">
+
+<input type="checkbox" name="mycheckbox" id="geo" value="0" /> Click here if you want to add some Area of Interest <br>
+
+	<div id="info">
+      <!-- <div>Select a shape then draw on map to add graphic</div> -->
+      <p id="sentence1" style="margin-bottom: 0px;">Select a shape </p>
+      <p id="sentence2" style="margin-bottom: 0px;">then draw on map </p>
+      <p id="sentence3"> to add graphic </p>
+      <button id="Circle"     class="btn btn-block btn-success hiddenfirst" style="margin-bottom: -15px;">Circle</button>      <br> 
+      <button id="Polygon"    class="btn btn-block btn-success hiddenfirst" style="margin-bottom: -15px;">Polygon</button>      <br>
+      
+      <button id="Delete"     class="btn btn-block btn-warning hiddenfirst" style="margin-bottom: -15px;">Delete last shape</button> <br>     
+      <button id="deleteall"  class="btn btn-block btn-danger  hiddenfirst" style="margin-bottom: -15px;">Delete All</button> <br>
+      
+    </div>
+
+    <div id="mapDiv"></div>
+	
+	<button id="nextStep"     class="btn btn-primary " style="margin-bottom: -15px;">Next Part</button> <br>          
+	
+	
+
+</div>
+
+</body>
+
+<script type="text/javascript">
+			  $( function() {
+			    $( "#datepicker" ).datepicker();
+			    $.datepicker.regional['es'] = {
+			    		closeText: "Cerrar",
+			    		prevText: "&#x3C;Ant",
+			    		nextText: "Sig&#x3E;",
+			    		currentText: "Hoy",
+			    		monthNames: [ "January","February","March","April","May","June",
+			    		"July","Agust","September","October","November","December" ],
+			    		monthNamesShort: [ "Jan","Feb","Mar","Apr","May","Jun",
+			    		"Jul","Aug","Sep","Oct","Nov","Dec" ],
+			    		dayNames: [ "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday" ],
+			    		dayNamesShort: [ "dom","lun","mar","mié","jue","vie","sáb" ],
+			    		dayNamesMin: [ "D","L","M","X","J","V","S" ],
+			    		weekHeader: "Sm",
+			    		dateFormat: "mm/dd/yy",
+			    		firstDay: 1,
+			    		isRTL: false,
+			    		showMonthAfterYear: false, 	yearSuffix: "" };
+			    	 $.datepicker.setDefaults($.datepicker.regional['es']);
+			  } );  
+</script>
+<script>
+  $( function() {
+    $( "#datepicker2" ).datepicker();
+  } );  
+</script>
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+	function recursiveGetProp(obj, lookup, callback) {
+	    for (property in obj) {
+	        if (property == lookup) {
+	            callback(obj[property]);
+	        } else if (obj[property] instanceof Object) {
+	            recursiveGetProp(obj[property], lookup, callback);
+	        }
+	    }
+	}
+	
+	var userID = sessionStorage.getItem('username');
+	$.post(
+			"readAuthor.php",
+			{
+				data: userID
+			},
+			function(data){
+			
+			var Jobj = JSON.parse(data);   
+			
+			recursiveGetProp(Jobj, 'firstName', function(obj)
+			{
+				authorFirstName = obj;
+			});
+			
+			recursiveGetProp(Jobj, 'linkPortrait', function(obj)
+			{
+				authorLinkPic = obj;
+			});
+			
+			//alert('First name is ' + authorFirstName + ' and linkPic is ' + authorLinkPic);
+			sessionStorage.firstName = authorFirstName;
+			sessionStorage.linkPic = authorLinkPic;
+			console.log('First name of author is ' + sessionStorage.firstName + ' and linkPic is ' + sessionStorage.linkPic);
+			}	
+		);	
+	
+
+	
+
+	$('#info').hide();
+	
+	var config = JSON.parse(sessionStorage.campaign);
+	console.log('Campaign config is ' + JSON.stringify(config));
+	
+	$('#Campaign_ID').val(config.Campaign_ID);
+		
+	$('#Campaign_Description').val(config.Campaign_Description);
+		
+	if (config.onetime == "true")
+	{
+		console.log('onetime value is true');
+		$('#onetime').prop('checked', true);
+	}	
+	
+	if (config.expiry == "true")
+	{
+		$('#expiry').prop('checked', true);
+		$('#mycheckboxdiv').show();		
+		
+		$('#datepicker').val( config.startDate.substring(0,config.startDate.indexOf(" ")) );		
+		
+		$('#startHour').val( config.startDate.substring(config.startDate.indexOf(" ")+1, config.startDate.indexOf(" ") +3 ) );		
+		
+		$('#startMinute').val( config.startDate.substring(config.startDate.indexOf(" ")+4, config.startDate.indexOf(" ") +6 ) );
+		
+		//---------------------------		
+		
+		$('#datepicker2').val( config.endDate.substring(0,config.startDate.indexOf(" ")) );		
+		
+		$('#endHour').val( config.endDate.substring(config.endDate.indexOf(" ")+1, config.endDate.indexOf(" ") +3 ) );		
+		
+		$('#endMinute').val( config.endDate.substring(config.endDate.indexOf(" ")+4, config.endDate.indexOf(" ") +6 ) );	
+	}
+
+	if (config.showResult == 'true')
+	{
+		$('#viewResult').prop('checked', true);
+	}
+	
+	if (config.showAuthor == 'true')
+	{
+		$('#showName').prop('checked', true);
+	}
+	
+	if (config.continuousSubmission == 'true')
+	{
+		$('#continuousSubmission').prop('checked', true);
+	}
+	
+	var GPS_List = [];
+	var Mercator_List = [];
+	
+	if (config.geoBoolean == 'true')
+	{
+		$('#geo').prop('checked', true);
+		$('#info').show();
+		console.log('Length of list of shape is ' + config.PoI_list.length);
+		for (var i=0;i < config.PoI_list.length;i++)
+		{
+			console.log('Shape GPS ' + i + ' is ');
+			console.log(config.PoI_list[i]);
+			GPS_List.push(config.PoI_list[i]);
+		}
+		for (var i=0;i < config.PoI_list_WebMercator.length;i++)
+		{
+			console.log('Shape Mercator ' + i + ' is ');
+			console.log(config.PoI_list_WebMercator[i]);
+			Mercator_List.push(config.PoI_list_WebMercator[i]);
+		}
+		
+		//console.log('The list of shapes in GPS format is ' + JSON.parse(config.PoI_list));
+		//console.log('The list of shapes in Web Mercator format is ' + JSON.parse(config.PoI_list_WebMercator));
+	}	
+	
+	$('#geo').change(function() {
+        $('#info').toggle();
+        $('#deleteall').click();
+    });		
+	
+	$('#expiry').change(function() 
+			{
+				$('#mycheckboxdiv').toggle();
+				if ( $(this).not(":checked"))
+				{
+					$('#startHour').val('');
+					$('#startMinute').val('');
+					$('#endHour').val('');
+					$('#endMinute').val('');
+					$('#datepicker').val('');
+					$('#datepicker2').val('');					
+				}
+			});		
+	
+	var list = config.PoI_list_WebMercator;
+	console.log('Size of mercator list is ' + list.length);
+	
+	$("#cancel").click(function () {			
+            window.location.href = "dashboard.html";	
+        });
+		
+	$("#update").click(function () {	
+
+		var CampaignID 				= config.Campaign_ID;
+		var CampaignDescription;
+		var onetime;
+		var expiry;
+		var startDate 				= ' ';
+		var endDate 				= ' ';	
+		var AreaOfInterestBoolean;
+		var GPS_List_updated 		= GPS_List;
+		var Mercator_List_updated 	= Mercator_List;
+		var startQues 				= config.startQuestion;
+		var Question_Array 			= config.Question_Array;
+		var workFlow 				= config.workflow;
+		var userID 					= sessionStorage.getItem('username');
+		var cytoscapeConfig 		= config.cytoscape;
+		var extrinsicBoolean 		= config.extrinsicBoolean;
+		var incentiveList 			= config.incentiveList;
+		var incentiveContact 		= config.incentiveContact;
+		var showResultBinary;
+		var secretCode 				= config.secretCode;
+		var authorCode 				= config.authorCode;
+		var showAuthorBoolean;	
+		var firstName 				= config.firstName;
+		var linkPic 				= config.linkPic;
+		var continuousSubmissionBoolean;	
+
+		var check = true;	
+			
+		console.log('First name of author is ' + sessionStorage.firstName + ' and linkPic is ' + sessionStorage.linkPic);			
+		
+		CampaignDescription = $('#Campaign_Description').val();
+		
+		onetime = $('#onetime').is(':checked') ? true : false ;
+		console.log('Boolean value of onetime is ' + onetime);
+		
+		expiry = $('#expiry').is(':checked') ? true : false ;		
+		
+		showResultBinary = $('#viewResult').is(':checked') ? true : false ;
+		
+		showAuthorBoolean = $('#showName').is(':checked') ? true : false ;
+		
+		continuousSubmissionBoolean = $('#continuousSubmission').is(':checked') ? true : false ;
+		
+		//if geo is ticked and has no shapes
+		if (area_list.length == 0) $('#geo').prop('checked', false);
+		
+		console.log('Expiry value is ' + expiry);
+		if (expiry == true)
+					{
+						if ( isNaN($('#startHour').val()) || isNaN($('#startMinute').val()) || isNaN($('#endHour').val()) || isNaN($('#endMinute').val())  )
+						{
+							check = false;
+							alert('Make sure the hour and minute input are numbers');
+						}
+						
+						if ( parseInt( $('#startHour').val() ) >= 24 || parseInt( $('#startHour').val() ) <= -1 || parseInt( $('#startMinute').val() ) >= 60 || parseInt( $('#startMinute').val() ) <= -1 || parseInt( $('#endHour').val() ) >=24 || parseInt( $('#endHour').val() ) <=-1|| parseInt( $('#endMinute').val() ) >=60 || parseInt( $('#endMinute').val() ) <= -1)
+						{
+							check = false;
+							alert('Make sure that hour are between 0 and 23  and/or minute are between 0 and 59');
+						}
+						
+						if (check == true)
+						{
+						startDate = $('#datepicker').val()  + ' ' + $('#startHour').val() + ':' + $('#startMinute').val()  ;				
+						endDate   = $('#datepicker2').val() + ' ' + $('#endHour').val()   + ':' + $('#endMinute').val()  ;				
+						}
+					}
+		
+		var DateStart = new Date();
+		DateStart.setMonth  ( parseInt($('#datepicker').val().substr(0,2), 10) -1   );
+		DateStart.setDate   ( parseInt($('#datepicker').val().substr(3,5), 10));
+		DateStart.setYear   ( parseInt($('#datepicker').val().substr(6,10)));
+		DateStart.setHours  ( parseInt( $('#startHour').val() ));
+		DateStart.setMinutes( parseInt( $('#startMinute').val() ));		
+		
+		var DateEnd = new Date();
+		DateEnd.setMonth     ( parseInt($('#datepicker2').val().substr(0,2), 10) -1   );
+		DateEnd.setDate      ( parseInt($('#datepicker2').val().substr(3,5), 10));
+		DateEnd.setYear      ( parseInt($('#datepicker2').val().substr(6,10)));
+		DateEnd.setHours     ( parseInt( $('#endHour').val() ));
+		DateEnd.setMinutes   ( parseInt( $('#endMinute').val() ));		
+		
+		console.log('Parsed startDate is ' + DateStart);
+		console.log('Parsed endDate is '   + DateEnd);		
+		
+		console.log('startDate is ' + startDate);	
+		console.log('endDate is '   + endDate);	
+		AreaOfInterestBoolean = $('#geo').is(':checked') ? true : false ; 
+		console.log('Value of Area Boolean is ' + AreaOfInterestBoolean);
+		
+		console.log(JSON.stringify(area_list));	
+		console.log('Check: GPS_List is ' + JSON.stringify(GPS_List));
+		console.log('Check: Mercator_List is ' + JSON.stringify(Mercator_List));
+		
+		if ( $('#Campaign_ID').val() == '' ) 
+			{
+				alert('Campaign name cannot be empty');
+				check = false;
+			}
+		else if (   ((expiry == true) && ( ($('#datepicker').val() == '')||($('#datepicker2').val() == '') || ($('#startHour').val() == '') || ($('#startMinute').val() == '') || ($('#endHour').val() == '') || ($('#endMinute').val() == '') ))   ) 
+			{
+				alert("Please select a start date and/or an end date");	
+				check = false;				
+			}
+		else if ((DateEnd <= DateStart))
+			{
+				alert("Please make sure End Date > Start Date");	
+				check = false;
+			}
+		
+		if (check == true) 
+			{
+				var cam = new Campaign(CampaignID, CampaignDescription, JSON.stringify(onetime), JSON.stringify(expiry), startDate, endDate, JSON.stringify(AreaOfInterestBoolean), GPS_List_updated, 
+										Mercator_List_updated,  startQues, Question_Array, workFlow,  userID, 
+										cytoscapeConfig,extrinsicBoolean, incentiveList, incentiveContact, JSON.stringify(showResultBinary), secretCode, 
+										authorCode, JSON.stringify(showAuthorBoolean), firstName, linkPic, JSON.stringify(continuousSubmissionBoolean) );
+				console.log('Updated campaign is ' + JSON.stringify(cam));
+				$.post( 	                
+		                "updateCampaign.php",
+		                { 
+		                  data: JSON.stringify(cam),
+		                  old_value: sessionStorage.campaign
+		                  },
+		                 
+		                function(data) {
+		                   
+		                   alert(data);  	
+		                   sessionStorage.campaign = null;
+		                   window.location.href = "dashboard.html";
+		                   
+		                }
+		             );
+					
+			}
+            
+        });
+		
+	$("#nextStep").click(function () 
+	{
+        var CampaignID;
+		var CampaignDescription;
+		var onetime;
+		var expiry;
+		var startDate;
+		var endDate;
+		var AreaOfInterestBoolean;
+		var userID = sessionStorage.getItem('username');
+		var showResultBinary;
+		var showAuthorBoolean;	
+		var continuousSubmissionBoolean;
+		
+		var check = true;	
+		
+		CampaignID = $('#Campaign_ID').val();
+		console.log(CampaignID);
+		
+		console.log('First name of author is ' + sessionStorage.firstName + ' and linkPic is ' + sessionStorage.linkPic);	
+		
+		
+		CampaignDescription = $('#Campaign_Description').val();
+		
+		onetime = $('#onetime').is(':checked') ? true : false ;
+		console.log('Boolean value of onetime is ' + onetime);
+		
+		expiry = $('#expiry').is(':checked') ? true : false ;		
+		
+		showResultBinary = $('#viewResult').is(':checked') ? true : false ;
+		
+		showAuthorBoolean = $('#showName').is(':checked') ? true : false ;
+		
+		continuousSubmissionBoolean = $('#continuousSubmission').is(':checked') ? true : false ;
+		
+		//if geo is ticked and has no shapes
+		if (area_list.length == 0) $('#geo').prop('checked', false);
+		
+		console.log('Expiry value is ' + expiry);
+		if (expiry == true)
+					{
+						if ( isNaN($('#startHour').val()) || isNaN($('#startMinute').val()) || isNaN($('#endHour').val()) || isNaN($('#endMinute').val())  )
+						{
+							check = false;
+							alert('Make sure the hour and minute input are numbers');
+						}
+						
+						if ( parseInt( $('#startHour').val() ) >= 24 || parseInt( $('#startHour').val() ) <= -1 || parseInt( $('#startMinute').val() ) >= 60 || parseInt( $('#startMinute').val() ) <= -1 || parseInt( $('#endHour').val() ) >=24 || parseInt( $('#endHour').val() ) <=-1|| parseInt( $('#endMinute').val() ) >=60 || parseInt( $('#endMinute').val() ) <= -1)
+						{
+							check = false;
+							alert('Make sure that hour are between 0 and 23  and/or minute are between 0 and 59');
+						}
+						
+						if (check == true)
+						{
+						startDate = $('#datepicker').val()  + ' ' + $('#startHour').val() + ':' + $('#startMinute').val()  ;				
+						endDate   = $('#datepicker2').val() + ' ' + $('#endHour').val()   + ':' + $('#endMinute').val()  ;				
+						}
+					}
+		
+		var DateStart = new Date();
+		DateStart.setMonth  ( parseInt($('#datepicker').val().substr(0,2), 10) -1   );
+		DateStart.setDate   ( parseInt($('#datepicker').val().substr(3,5), 10));
+		DateStart.setYear   ( parseInt($('#datepicker').val().substr(6,10)));
+		DateStart.setHours  ( parseInt( $('#startHour').val() ));
+		DateStart.setMinutes( parseInt( $('#startMinute').val() ));		
+		
+		var DateEnd = new Date();
+		DateEnd.setMonth     ( parseInt($('#datepicker2').val().substr(0,2), 10) -1   );
+		DateEnd.setDate      ( parseInt($('#datepicker2').val().substr(3,5), 10));
+		DateEnd.setYear      ( parseInt($('#datepicker2').val().substr(6,10)));
+		DateEnd.setHours     ( parseInt( $('#endHour').val() ));
+		DateEnd.setMinutes   ( parseInt( $('#endMinute').val() ));		
+		
+		console.log('Parsed startDate is ' + DateStart);
+		console.log('Parsed endDate is '   + DateEnd);		
+		
+		console.log('startDate is ' + startDate);	
+		console.log('endDate is '   + endDate);	
+		AreaOfInterestBoolean = $('#geo').is(':checked') ? true : false ; 
+		console.log('Value of Area Boolean is ' + AreaOfInterestBoolean);
+		
+		console.log(JSON.stringify(area_list));	
+		console.log('Check: GPS_List is ' + JSON.stringify(GPS_List));
+		console.log('Check: Mercator_List is ' + JSON.stringify(Mercator_List));
+		
+		if ( $('#Campaign_ID').val() == '' ) 
+			{
+				alert('Campaign name cannot be empty');
+				check = false;
+			}
+		else if (   ((expiry == true) && ( ($('#datepicker').val() == '')||($('#datepicker2').val() == '') || ($('#startHour').val() == '') || ($('#startMinute').val() == '') || ($('#endHour').val() == '') || ($('#endMinute').val() == '') ))   ) 
+			{
+				alert("Please select a start date and/or an end date");	
+				check = false;				
+			}
+		else if ((DateEnd <= DateStart))
+			{
+				alert("Please make sure End Date > Start Date");		
+				check = false;
+			}
+			
+		if (check == true) 
+			{
+				//Send campaign parameters to the next page (CreateCampaign_step2.html)
+				sessionStorage.CamID_Session                 = CampaignID;
+				sessionStorage.CamDescription_Session        = CampaignDescription;
+				sessionStorage.onetimeBoolean_Session        = onetime;
+				sessionStorage.expiryBoolean_Session         = expiry;
+				sessionStorage.startDate_Session             = startDate;
+				sessionStorage.endDate_Session               = endDate;
+				sessionStorage.AreaOfInterestBoolean_Session = AreaOfInterestBoolean;
+				sessionStorage.AreaOfInterest_Session        = JSON.stringify(GPS_List);	
+				sessionStorage.userID_Session                = userID;
+				sessionStorage.WebMercator_Session           = JSON.stringify(Mercator_List);
+				sessionStorage.showResultBoolean			 = showResultBinary;
+				sessionStorage.showAuthorValue 				 = showAuthorBoolean;
+				sessionStorage.continuousSubmissionValue	 = continuousSubmissionBoolean;
+				
+				console.log('Session: ' + sessionStorage.CamID_Session);
+				console.log('Session: ' + sessionStorage.CamDescription_Session);
+				console.log('Session: ' + sessionStorage.onetimeBoolean_Session );
+				console.log('Session: ' + sessionStorage.expiryBoolean_Session);
+				console.log('Session: ' + sessionStorage.startDate_Session  );
+				console.log('Session: ' + sessionStorage.endDate_Session );
+				console.log('Session: ' + sessionStorage.AreaOfInterestBoolean_Session);
+				console.log('Session: ' + sessionStorage.AreaOfInterest_Session);
+				console.log('Session: ' + sessionStorage.userID_Session);
+				console.log('Session: ' + sessionStorage.WebMercator_Session);
+				
+				//alert('Now move to next step: Defining questions and transitions');
+				
+				window.location.href = "edit_step2.html";
+				
+			}
+    });
+	
+	
+	//var str = "{\"geometry\":{\"rings\":[[[-5940.012342596171,4864778.66319376],[-3823.6621218946,4864788.217822297],[-3632.5695511766253,4863464.901770074],[-6030.781313687209,4863488.788341414],[-5940.012342596171,4864778.66319376]]],\"spatialReference\":{\"wkid\":102100,\"latestWkid\":3857}},\"symbol\":{\"color\":[0,0,0,64],\"outline\":{\"color\":[0,0,0,255],\"width\":1,\"type\":\"esriSLS\",\"style\":\"esriSLSSolid\"},\"type\":\"esriSFS\",\"style\":\"esriSFSSolid\"}}";
+	//var str2 = '{"geometry":{"rings":[[[-11820.88620680747,4862369.225640749],[-7635.958908199711,4862311.897869535],[-7330.210795059418,4861012.468388689],[-12222.180605304105,4860974.249874546],[-11820.88620680747,4862369.225640749]]],"spatialReference":{"wkid":102100,"latestWkid":3857}},"symbol":{"color":[0,0,0,64],"outline":{"color":[0,0,0,255],"width":1,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}';
+	//var str3 = '{"geometry":{"rings":[[[-3164.392753522927,4861872.384956895],[-2495.568756028535,4863496.671807953],[-1998.7280721755596,4861891.494213967],[-3412.8130954494136,4862999.831124101],[-1750.307730249071,4862846.957067531],[-3164.392753522927,4861872.384956895]]],"spatialReference":{"wkid":102100,"latestWkid":3857}},"symbol":{"color":[0,0,0,64],"outline":{"color":[0,0,0,255],"width":1,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}';
+	//var shapeObj = JSON.parse(str);
+	//var array = [JSON.parse(str),JSON.parse(str2),JSON.parse(str3)];
+	var array = [];
+	
+	
+	for (var i=0;i<list.length;i++)
+		array.push( JSON.parse(list[i]) );
+		
+	
+	var map, tb;
+	//var area_list = [];
+	//var area_list_WebMercator = [];
+	
+	var area_list = config.PoI_list;
+	console.log('PoI list has length of ' + area_list.length);
+	var area_list_WebMercator = config.PoI_list_WebMercator;
+	console.log('PoI_Mercator has length of ' + area_list_WebMercator.length);
+	dojo.require("esri.toolbars.draw");
+	require([
+	   	  "esri/map", "esri/toolbars/draw", "esri/symbols/SimpleFillSymbol","esri/geometry/Point",
+	   	  "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
+	   	  "esri/symbols/PictureFillSymbol", "esri/symbols/CartographicLineSymbol", 
+	   	  "esri/graphic", "esri/geometry/webMercatorUtils",
+	   	  "esri/Color", "dojo/dom", "dojo/on", "dojo/domReady!"
+	   	], function(
+	   	  Map, Draw,SimpleFillSymbol, Point,
+	   	  SimpleMarkerSymbol, SimpleLineSymbol,
+	   	  PictureFillSymbol, CartographicLineSymbol, 
+	   	  Graphic, webMercatorUtils,
+	   	  Color, dom, on
+	   	) {
+	   	  map = new Map("mapDiv", {
+	   	    basemap: "streets",	   	 
+	   	    center: [-0.045030, 39.988032],
+	   	    zoom: 13
+	   	  });
+	   	  
+	   	  //var myGraphic = new Graphic( shapeObj );
+	   	  //console.log( JSON.stringify(myGraphic.toJson()) );
+	   	  
+	   	  map.on("load", initToolbar);
+	   	  
+	   	  //customInitialize(myGraphic, map);
+	   	  //map.graphics.add(myGraphic);
+	   	  
+
+	   	  // markerSymbol is used for point and multipoint, see http://raphaeljs.com/icons/#talkq for more examples
+	   	  var markerSymbol = new SimpleMarkerSymbol();
+	   	  markerSymbol.setPath("M16,4.938c-7.732,0-14,4.701-14,10.5c0,1.981,0.741,3.833,2.016,5.414L2,25.272l5.613-1.44c2.339,1.316,5.237,2.106,8.387,2.106c7.732,0,14-4.701,14-10.5S23.732,4.938,16,4.938zM16.868,21.375h-1.969v-1.889h1.969V21.375zM16.772,18.094h-1.777l-0.176-8.083h2.113L16.772,18.094z");
+	   	  markerSymbol.setColor(new Color("#00FFFF"));
+
+	   	  // lineSymbol used for freehand polyline, polyline and line. 
+	   	  var lineSymbol = new CartographicLineSymbol(
+	   	    CartographicLineSymbol.STYLE_SOLID,
+	   	    new Color([255,0,0]), 10, 
+	   	    CartographicLineSymbol.CAP_ROUND,
+	   	    CartographicLineSymbol.JOIN_MITER, 5
+	   	  );
+
+	   	  // fill symbol used for extent, polygon and freehand polygon, use a picture fill symbol
+	   	  // the images folder contains additional fill images, other options: sand.png, swamp.png or stiple.png
+	   	  var fillSymbol = new SimpleFillSymbol();
+
+	   	  function initToolbar() {
+	   	    tb = new Draw(map);
+	   	    tb.on("draw-end", addGraphic);
+	   	    tb.on("draw-end", customInitialize(array));
+	   	    
+
+	   	    // event delegation so a click handler is not
+	   	    // needed for each individual button
+	   	    on(dom.byId("info"), "click", function(evt) {
+	   	      if ( evt.target.id === "info" || evt.target.id.includes('sentence') ) {
+	   	        return;
+	   	      }
+	   	      
+	   	      if ( evt.target.id === "deleteall" ) 
+			  {
+	   	    	  map.graphics.clear();
+	   	    	  for (var i = area_list.length; i > 0; i--) {	  area_list.pop(); 		 }	  
+				  for (var j = area_list_WebMercator.length; j > 0; j--) {   area_list_WebMercator.pop();   }  
+				  
+				  for (var x = GPS_List.length; x > 0; x--)
+				  {
+						GPS_List.pop();					
+				  }
+				  for (var y = Mercator_List.length; y > 0; y--)
+				  {
+						Mercator_List.pop();
+				  }
+				  
+				  console.log('After DELETE ALL, length of GPS_List is ' + GPS_List.length + ' and Mercator_List is ' + Mercator_List.length);				  
+				  
+	   	    	  console.log('Size of area array is ' + area_list.length);
+	   	    	  console.log( JSON.stringify(area_list) );
+	   	    	  return;
+	   	        }
+	   	      
+	   	      if ( evt.target.id === "Delete" ) 
+			  {	   	    	  			  
+				  map.graphics.remove(map.graphics.graphics[map.graphics.graphics.length - 1]);
+				  area_list.splice(area_list.length-1,1);
+				  area_list_WebMercator.splice(area_list_WebMercator.length-1,1);
+				  console.log('Size of area array is ' + area_list.length);
+				  console.log('Size of Mercator array is ' + area_list_WebMercator.length);
+				  console.log( JSON.stringify(area_list) );
+				  
+				  GPS_List.splice(GPS_List.length-1, 1);
+				  Mercator_List.splice(Mercator_List.length-1,1);
+				  console.log('After DELETE LAST SHAPE, length of GPS_List is ' + GPS_List.length + ' and Mercator_List is ' + Mercator_List.length);				  
+				  return;
+	   	        }
+	   	      var tool = evt.target.id.toLowerCase();
+	   	      map.disableMapNavigation();
+	   	      tb.activate(tool);
+	   	    });
+			initFunc(map);
+	   	  }
+		  
+		  function initFunc(map) {
+            if( navigator.geolocation ) {
+                navigator.geolocation.getCurrentPosition(zoomToLocation, locationError);
+                //watchId = navigator.geolocation.watchPosition(showLocation, locationError);
+            } else {
+                alert("Browser doesn't support Geolocation. Visit http://caniuse.com to see browser support for the Geolocation API.");
+            }
+        }
+	
+	function locationError(error) {
+
+            //error occurred so stop watchPosition
+            if( navigator.geolocation ) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("Location not provided");
+                    break;
+
+                case error.POSITION_UNAVAILABLE:
+                    alert("Current location not available");
+                    break;
+
+                case error.TIMEOUT:
+                    alert("Timeout");
+                    break;
+
+                default:
+                    alert("unknown error");
+                    break;
+            }
+        }
+		
+	function zoomToLocation(location) {
+            console.log("Zoom");
+            var pt = new Point(location.coords.longitude, location.coords.latitude);
+            map.centerAndZoom(pt, 13);
+        }
+	   	  
+	   	  function customInitialize(arrayinput)
+	   	  {
+	   		  for (var i =0;i<arrayinput.length;i++)
+	   			  {
+	   				var newGraphic = new Graphic(arrayinput[i]);
+	   				map.graphics.add(newGraphic);
+	   			  }  	    
+	   		  
+	   	  }
+
+	   	  function addGraphic(evt) {
+	   	    //deactivate the toolbar and clear existing graphics 
+	   	    tb.deactivate(); 
+	   	    map.enableMapNavigation();
+
+	   	    // figure out which symbol to use
+	   	    var symbol;
+	   	    if ( evt.geometry.type === "point" || evt.geometry.type === "multipoint") {
+	   	      symbol = markerSymbol;
+	   	    } else if ( evt.geometry.type === "line" || evt.geometry.type === "polyline") {
+	   	      symbol = lineSymbol;
+	   	    }
+	   	    else {
+	   	      symbol = fillSymbol;
+	   	    }
+			
+			
+	   	    
+	   	    var graphic_converted = webMercatorUtils.webMercatorToGeographic(evt.geometry);
+	   	    
+	   	    var newGraphic = new Graphic(evt.geometry, symbol);
+	   	    map.graphics.add(newGraphic);	   	
+
+			console.log('The new shape in Mercator format is ' + JSON.stringify(newGraphic.toJson()));
+			console.log('The new shape in GPS format is ' + JSON.stringify(graphic_converted.toJson()));
+			
+			area_list.push(JSON.stringify(graphic_converted.toJson()));
+			area_list_WebMercator.push(JSON.stringify(newGraphic.toJson()));
+			
+			GPS_List.push(JSON.stringify(graphic_converted.toJson()));
+			Mercator_List.push(JSON.stringify(newGraphic.toJson()));
+			console.log('After DRAWING, length of GPS_List is ' + GPS_List.length + ' and Mercator_List is ' + Mercator_List.length);				  
+			
+	   	    //alert(JSON.stringify(graphic_converted.toJson()));
+	   	    console.log('Size of area array is ' + area_list.length);   
+	   	    console.log( JSON.stringify(area_list) );
+			
+			console.log('Size of area array Mercator is ' + area_list_WebMercator.length);
+			console.log(JSON.stringify(area_list_WebMercator));
+	   	  }
+	   	});
+	
+	
+});
+</script>
+
+</html>

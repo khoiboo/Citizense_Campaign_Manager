@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- Include JS File Here -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+<style type="text/css">
+
+
+
+	.tablestyle{
+		/*width:100%;*/ 
+		border-collapse:collapse; 
+	}
+	.tablestyle td{ 
+		padding:7px; border:#4e95f4 1px solid;
+	}
+	/*  Define the background color for all the ODD background rows  */
+	.tablestyle tr:nth-child(odd){ 
+		background: #b8d1f3;
+	}
+	/*  Define the background color for all the EVEN background rows  */
+	.tablestyle tr:nth-child(even){
+		background: #dae5f4;
+	}
+	.highlight
+	{
+		background:red;
+	}
+	
+	.highlighthover
+	{
+		background:  #26cd77 ;
+	}
+</style>
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+var userID = sessionStorage.getItem('username');
+	if (userID == null)
+		{
+			alert('Please log in or sign up');
+			window.location.href = "welcome.html";
+		}
+	else
+	{
+		var array = [];
+	var selection = '';
+	
+	
+	console.log('UserID is ' + userID);
+	
+	function recursiveGetProp(obj, lookup, callback) {
+	    for (property in obj) {
+	        if (property == lookup) {
+	            callback(obj[property]);
+	        } else if (obj[property] instanceof Object) {
+	            recursiveGetProp(obj[property], lookup, callback);
+	        }
+	    }
+	}
+	
+	var authorFirstName;
+	var authorLinkPic;
+		
+	$('#create').on('click', function(e)   
+	{	
+		
+		$.post(
+			"readAuthor.php",
+			{
+				data: userID
+			},
+			function(data){
+			
+			var Jobj = JSON.parse(data);   
+			
+			recursiveGetProp(Jobj, 'firstName', function(obj)
+			{
+				authorFirstName = obj;
+			});
+			
+			recursiveGetProp(Jobj, 'linkPortrait', function(obj)
+			{
+				authorLinkPic = obj;
+			});
+			
+			//alert('First name is ' + authorFirstName + ' and linkPic is ' + authorLinkPic);
+			sessionStorage.firstName = authorFirstName;
+			sessionStorage.linkPic = authorLinkPic;
+			window.location.href = "CreateCampaign_step1.html";	
+			}	
+		);			
+	});
+	
+	$('[data-toggle="Edit-tooltip"]').tooltip();
+	$('[data-toggle="Delete-tooltip"]').tooltip();
+	$('[data-toggle="View-tooltip"]').tooltip();
+	$('[data-toggle="Result-tooltip"]').tooltip();
+	
+	$.post(			                
+            "readMongo.php",
+            { 
+            	data: userID			                  
+            },
+            function(data) {
+               
+               //loalert(data); 
+               console.log(data);
+               
+               var Jobj = JSON.parse(data);              
+               
+               recursiveGetProp(Jobj, 'campaign_ID', function(obj) 
+            		   {
+							//console.log(obj);
+							array.push(obj);
+					    });
+               
+               console.log('Size of array is ' + array.length);
+               console.log('Inside post, content of array is ' + JSON.stringify(array));               
+               sessionStorage.array = JSON.stringify(array);               
+               
+					            var cam_list = [];
+					            cam_list.push(["Your campaign"]);
+					            for (var i=0;i< array.length;i++)
+					            	  {
+					            	   		cam_list.push([array[i]]);
+					            	  }
+									  
+								$('#dvTable').append(" <h3>Welcome back, " + userID + "</h3> <br>");
+								$('#dvTable').append(" <h5>Please select a campaign in the following list to view, edit or delete. You can also view the results of your selected campaigns.</h5>");
+								
+					            //Create a HTML Table element.
+					       	    var table = document.createElement("TABLE");
+					            table.setAttribute("id","mytable");
+					            table.setAttribute("class", "tablestyle");
+					       	    table.border = "1";
+					       	 
+					       	    //Get the count of columns.
+					       	    var columnCount = cam_list[0].length;
+					       	 
+					       	    //Add the header row.
+					       	    var row = table.insertRow(-1);
+					       	    for (var i = 0; i < columnCount; i++) {
+					       	        var headerCell = document.createElement("TH");
+					       	        headerCell.innerHTML = cam_list[0][i];
+					       	        row.appendChild(headerCell);
+					       	    }
+					       	 
+					       	    //Add the data rows.
+					       	    for (var i = 1; i < cam_list.length; i++) {
+					       	        row = table.insertRow(-1);
+					       	        for (var j = 0; j < columnCount; j++) {
+					       	            var cell = row.insertCell(-1);
+					       	            cell.innerHTML = cam_list[i][j];
+					       	        }
+					       	    }
+					       	 
+					       	    var dvTable = document.getElementById("dvTable");
+					       	    //dvTable.innerHTML = "";
+					       	    dvTable.appendChild(table);	
+					       	    
+					       	    $('td').addClass('abc');
+					       	    
+					       	 $(function () {
+					     		$('td').click(function() {
+					     			$('.abc').removeClass('highlight');
+					     			$('.abc').removeClass('highlighthover');
+					     			$(this).toggleClass('highlight');					     			
+					     			
+					     		});
+					     	});
+					       	 
+					       	$(function () {
+					     		$('td').mouseenter(function() {
+					     			$('.abc').removeClass('highlighthover');
+					     			$(this).toggleClass('highlighthover');					     			
+					     			
+					     		});
+					     	});
+					       	$(function () {
+					     		$('td').mouseleave(function() {
+					     			$('.abc').removeClass('highlighthover');
+					     			//$(this).toggleClass('highlighthover');
+					     			$('#middle').empty();
+					     			
+					     		});
+					     	});
+					       	    
+					       	    
+					       	   
+					       	 function addRowHandlers() {
+					     	    var table = document.getElementById("mytable");
+					     	    var rows = table.getElementsByTagName("tr");
+					     	    for (i = 0; i < rows.length; i++) {
+					     	        var currentRow = table.rows[i];
+					     	        var createClickHandler = 
+					     	            function(row) 
+					     	            {
+					     	                return function() { 
+					     	                						$('#middle').empty();
+					     	                                        var cell = row.getElementsByTagName("td")[0];
+					     	                                        var id = cell.innerHTML;
+					     	                                        console.log("You have selected " + id);
+					     	                                        selection = id;
+					     	                                        
+					     	                                       $.post(			                
+					     	  								            "readStatistics.php",
+					     	  								            { 
+					     	  								            	data: selection 			                  
+					     	  								            },
+					     	  								            function(data) {  
+					     	  								            	
+					     	  								            	//alert(data);
+					     	  								            	var Jobj = JSON.parse(data); 
+					     	  								            	var submit;
+					     	  								            	var download;
+					     	  								            	recursiveGetProp(Jobj, 'submit', function(obj) 
+					     	  									            		   {											
+					     	  																submit = obj;										
+					     	  														    });
+					     	  								            	recursiveGetProp(Jobj, 'download', function(obj) 
+					     	  									            		   {											
+					     	  																download = obj;										
+					     	  														    });
+					     	  								            	console.log('For this campaign, download is ' + download + ' and submit is ' + submit);
+					     	  								            	//alert('For this campaign, download is ' + download + ' and submit is ' + submit);
+					     	  								            	$('<br><br>').text('').appendTo('#middle');
+					     	  								            	$('<p></p>').text('For this campaign, download is ' + download + ' and submit is ' + submit).appendTo('#middle');
+					     	  								            }
+					     	  								         );
+					     	                                        
+					     	                                 };
+					     	            };
+
+					     	        currentRow.onclick = createClickHandler(currentRow);
+					     	    }
+					     	}
+					     	window.onload = addRowHandlers();
+					     	
+                              
+            }
+         );	
+	
+	console.log('Out of post, content of array is ' + JSON.stringify(array));
+	
+	$('#new_edit').on('click', function(e)     
+			{
+				if (selection !='')
+				{
+					console.log('Will edit ' + selection);
+					$.post(			                
+			            "readCampaign.php",
+			            { 
+			            	data: selection 			                  
+			            },
+			            function(data) {			               
+			                
+			               console.log(data);	
+			               var Jobj = JSON.parse(data); 
+			               
+			               recursiveGetProp(Jobj, 'campaign_Config', function(obj) 
+			            		   {
+										console.log(obj);
+										sessionStorage.campaign = obj;										
+								    });		               
+			               window.location.href = "edit_step1.html";			                              
+			            }
+			         );
+				}				
+			});	
+	
+	$('#viewCampaign').on('click', function(e)     
+			{   	
+				console.log('Will view ' + selection);
+				
+				if (selection != '')
+				{
+					$.post(			                
+			            "readCampaign.php",
+			            { 
+			            	data: selection 			                  
+			            },
+			            function(data) {			               
+			                
+			               console.log(data);	
+			               var Jobj = JSON.parse(data); 
+			               
+			               recursiveGetProp(Jobj, 'campaign_Config', function(obj) 
+			            		   {
+										console.log(obj);
+										sessionStorage.campaign = obj;										
+								    });		               
+			               window.location.href = "view_step1.html";			                              
+			            }
+			         );
+					
+				}				
+				
+			});	
+	
+	$('#delete').on('click', function(e)     
+			{   	
+				console.log('Will delete ' + selection);
+				
+				if (selection != '')
+				{
+					$.post(			                
+			            "deleteCampaign.php",
+			            { 
+			            	data: selection 			                  
+			            },
+			            function(data) {  
+			            	
+			            	alert(data);
+			            	location.reload(true);			               			                              
+			            }
+			         );
+				}
+				
+				
+			});	
+	$('#viewStatistics').on('click', function(e)     
+			{   	
+				console.log('Will view brief Statistics of  ' + selection);
+				
+				$.post(			                
+			            "readStatistics.php",
+			            { 
+			            	data: selection 			                  
+			            },
+			            function(data) {  
+			            	
+			            	//alert(data);
+			            	var Jobj = JSON.parse(data); 
+			            	var submit;
+			            	var download;
+			            	recursiveGetProp(Jobj, 'submit', function(obj) 
+				            		   {											
+											submit = obj;										
+									    });
+			            	recursiveGetProp(Jobj, 'download', function(obj) 
+				            		   {											
+											download = obj;										
+									    });
+			            	console.log('For this campaign, download is ' + download + ' and submit is ' + submit);
+			            	alert('For this campaign, download is ' + download + ' and submit is ' + submit);			            				               			                              
+			            }
+			         );
+			});	
+	
+	$('#detailStatistics').on('click', function(e)     
+			{   	
+				console.log('Will view detailed Statistics of  ' + selection);
+				
+				$.post(			                
+			            "readDetailStatistics.php",
+			            { 
+			            	data: selection 			                  
+			            },
+			            function(data) {  	            	
+			            	
+							//alert(data);
+			            	var Jobj = JSON.parse(data); 
+			            	var answerArray = [];
+			            	
+			            	recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {											
+			            		answerArray.push(obj);									
+							});
+										
+			            	sessionStorage.answerArray = JSON.stringify(answerArray);
+			            	sessionStorage.selection = selection;
+			            	window.location.href = "detailedStatistics.html";			            	
+			            }
+			         );
+			});	
+			
+		function deleteCampaign(selection)
+		{
+			console.log('Will delete ' + selection);
+				
+				if (selection != '')
+				{
+					$.post(			                
+			            "deleteCampaign.php",
+			            { 
+			            	data: selection 			                  
+			            },
+			            function(data) {  
+			            	
+			            	//alert(data);
+			            	location.reload(true);			               			                              
+			            }
+			         );
+				}
+		}
+
+		$('#deleteConfirm').on('click', function(e)     
+			{
+				if (selection != '')
+				{
+					if (confirm('Do you want to delete this campaign ?')) 
+					{
+						deleteCampaign(selection);
+					}
+				}
+				
+			});	
+			
+		$('#feedback').on('click', function(e)     
+		{			
+			window.location.href = "feedback.html";			            			
+		}); 
+			
+		$('#logout').on('click', function(e)     
+		{
+			console.log('LOG OUT NOW');
+			sessionStorage.setItem('username', null);
+			localStorage.clear();
+			sessionStorage.clear();
+			window.location.href = "welcome.html";			            	
+		
+		}); 
+	
+	}
+	
+	
+  
+});
+</script>
+
+</head>
+
+<body>
+
+<br><br><br>
+ <!--Nav-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="background: #4c8dc7;">
+    <div class="container">
+        <div class="navbar-header">
+            <!--Part of left-->
+            
+            <div id="stepsUserAuth">
+                <a class="navbar-brand" href="" title="NavApps">
+                    <img src="transparentCitizense.png" alt="Geo-C" height="30px" style="display: inline">
+                    
+                </a>
+            <span class="navbar-brand steps">
+                
+                
+                
+            </span>
+            </div>
+            
+        </div>
+        <!--Part of right-->
+        <div id="navbar" class="navbar-collapse collapse">
+		
+		<form class="navbar-form navbar-right">
+                <!--If the person authenticate in web page these button won't appear-->
+                <div id="loginButtonsUserNoAuth">                    
+                    
+                    <button type="button" name="logout" class="btn btn-danger" id="logout">    Log out   </button>
+                    
+                </div>
+                <!--If the person authenticate in web page these button will appear-->
+                <div id="welcomeButtonsUserAuth">
+                    <span style="color: white" id="nameSurnameLoggedUserAuth">
+                        <!--Name of user, name and surname of the login user loaded from JS-->
+                    </span>
+                </div>                
+        </form>
+
+            
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>
+
+
+
+<div>
+    <!-- <button id="edit">Edit</button> -->
+    <!-- <button id="create">Create</button> -->
+    
+</div>
+
+<div id="dvTable" class="col-lg-4">
+
+<br>
+
+</div>
+
+<div id="middle" class="col-lg-4">
+
+
+
+<br><br>
+
+</div>
+
+<div  class="col-lg-4">
+
+<br><br>
+<button id="create" class="btn btn-success">Create a new Campaign</button>
+<br><br> 
+<button id="viewCampaign" class="btn btn-info" data-toggle="View-tooltip" title="Click on a campaign in the list to select, then click this button to view the selected campaign. No changes can be made to the campaign" >  View configuration of campaign</button> 
+<br><br>
+<button id="new_edit" class="btn btn-primary" data-toggle="Edit-tooltip" title="Click on a campaign in the list to select, then click this button to edit the selected campaign" >Edit Campaign</button>
+<br><br>
+
+<!-- <button id="delete" class="btn btn-danger" data-toggle="Delete-tooltip" title="Click on a campaign in the list to select, then click this button to delete the selected campaign"> <span class="glyphicon glyphicon-remove-sign"></span> Delete Campaign</button>
+<br><br> -->
+
+<button id="deleteConfirm" class="btn btn-danger" data-toggle="Delete-tooltip" title="Click on a campaign in the list to select, then click this button to delete the selected campaign"> <span class="glyphicon glyphicon-remove-sign"></span> Delete Campaign</button>
+<br><br>
+<!-- <button id="viewStatistics" class="btn ">  View Statistics</button> -->
+<br><br>
+<button id="detailStatistics" class="btn btn-info" data-toggle="Result-tooltip" title="Click on a campaign in the list to select, then click this button to see the results of the campaign">  View results of campaign</button>
+<br><br>
+<a target="_blank" href="http://www.citizense.uji.es/publicResultViewerTest">Live results of all public campaigns</a>
+<br><br><br>
+<button id="feedback" class="btn btn-info"  >  Your feedback on this platform</button>
+
+
+
+<br>
+
+</div>
+
+
+<br>
+
+
+
+</body>
+
+
+</html>

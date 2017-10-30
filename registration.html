@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Registration Page - Citizense</title>
+<meta name="robots" content="noindex, nofollow">
+
+<!-- Include JS File Here -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	
+<script type="text/javascript" >
+
+$(document).ready(function() {
+	
+	var selectedFile;
+	var portraitPhotoLink = '';
+	
+	function cleaseText(filePath)
+		    {
+				var cleanedText;
+				console.log('filePath is ' + filePath);
+				if (filePath.includes('\\'))
+					{
+						console.log('The filePath is ' + filePath + ', it contains character \\' );
+						var lastIndex = filePath.lastIndexOf('\\');
+						console.log('The last index of \\ is ' + lastIndex);
+						
+						cleanedText = filePath.substring(lastIndex +1, filePath.length);
+						console.log('The cleaned text is ' + cleanedText);						
+					}
+				else cleanedText = filePath;
+				
+				return cleanedText;
+		    }
+			
+	function drawImageWhenCreateQues(imageSrc)
+		{
+			console.log('Full image link is ' + imageSrc);
+			var localImage = imageSrc.substring( imageSrc.lastIndexOf('\\')+1 ,imageSrc.length);
+			console.log('Local image link is ' + localImage);
+			var canvas=document.getElementById('myCanvasCreateQues');
+			$('#myCanvasCreateQues').show();
+			var ctx= canvas.getContext('2d');
+																	
+			var img = new Image();
+			img.onload= drawImageScaled.bind(null, img, ctx);
+															
+			img.src = 'AuthorPic/' + imageSrc;			
+		}
+	
+	$("#submitForm").click(function () {
+		
+			console.log('Upload clicked');
+			
+			var now = new Date();
+			var tail = '_' + now.getTime();
+			
+            var formData = new FormData($('#uploadForm')[0]);					
+			
+			selectedFile = cleaseText(document.getElementById('fileSelector').value);		
+			
+			var originalFileName = selectedFile;
+			console.log('Original file name is ' + originalFileName);
+			console.log('Tail is ' + tail);
+			var editedFileName = selectedFile.substring(0, selectedFile.lastIndexOf('.')) + tail + selectedFile.substring(selectedFile.lastIndexOf('.'), selectedFile.length);
+			console.log('Edited file name is ' + editedFileName);
+			selectedFile = editedFileName;
+			
+			formData.append("finalName",editedFileName);			
+			
+			console.log('Start uploading ' + editedFileName);
+			
+            $.ajax({
+                method: "POST",
+                url: 'upload_portrait.php',
+                data: formData,
+                success : function( res ) {
+                    if(res=="OK"){
+                        alert("Upload file " + selectedFile + " successful");
+						portraitPhotoLink = 'http://www.citizense.uji.es/AuthorPic/' + selectedFile;
+						//drawImageWhenCreateQues(editedFileName);
+                    }else{
+                        alert("Error when upload. Please try again !");
+                    }
+                },
+                error:  function(res){
+                    console.log(res);
+                },
+                processData: false,
+                contentType: false,
+            });	
+			
+        });
+	
+	
+$("#register").click(function() {
+var firstname = $("#fname").val();
+var lastname = $("#lname").val();
+
+
+console.log('First name is ' + firstname + ' and last name is ' + lastname);
+
+var YoB = $("#YoB").val();
+var sex = $("input[name='gender']:checked"). val();
+
+var email = $("#email").val();
+
+var password = $("#password").val();
+var cpassword = $("#cpassword").val();
+var nickname = $('#nickname').val();
+if ( $('#nickname').val() == '' ) { nickname = email; }
+else { nickname = $('#nickname').val(); }
+nickname = nickname.replace(' ', '_');
+if (firstname == '' || email == '' || password == '' || cpassword == '') 
+{
+	alert("Please fill all fields...!!!!!!");
+} 
+
+else if (!(password).match(cpassword)) 
+{
+	alert("Your passwords don't match. Try again?");
+} 
+else {
+	console.log('Info is ' + firstname + ' ' + lastname + ' ' + portraitPhotoLink + ' ' + YoB + ' ' + sex + ' ' + email + ' ' + password );
+	$.post("registerNew.php", {
+	name1: firstname,
+	name2: lastname,
+	name3: nickname,
+	linkPic: portraitPhotoLink,
+	YoBvalue: YoB,
+	gender: sex,	
+	email1: email,
+	password1: password
+	}, function(data) {
+	if (data.includes('You have Successfully Registered')) 
+	{
+		$("form")[0].reset();
+		alert('Registration has been done successfully!');
+		window.location.href = "welcome.html";
+	}
+	//alert(data);
+	});
+}
+});
+
+$("#cancel").click(function() {
+	
+	$('#fname').val('');
+	$('#lname').val('');
+	$('#').val('YoB');
+	$('#').val('email');
+	$('#').val('password');
+	$('#').val('cpassword');
+	
+	window.location.href = "welcome.html";
+});
+});
+
+
+
+
+</script>
+
+<style type="text/css">
+
+th, td {
+    padding: 5px;
+    text-align: left;
+}
+</style>
+
+</head>
+<body>
+<div class="container">
+<!--Nav-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="background: #4c8dc7;">
+    <div class="container">
+        <div class="navbar-header">
+            <!--Part of left-->
+            
+            <div id="stepsUserAuth">
+                <a class="navbar-brand" href="" title="NavApps">
+                    <img src="transparentCitizense.png" alt="Geo-C" height="30px" style="display: inline">
+                    
+                </a>
+            <span class="navbar-brand steps">               
+                
+                
+            </span>
+            </div>
+            
+        </div>
+        <!--Part of right-->
+        <div id="navbar" class="navbar-collapse collapse">            
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>
+<br><br>
+
+<div class="col-lg-1"></div>
+
+
+
+
+
+<div class="main col-lg-10">
+	
+	<h2>Please fill in the form to register yourself in the platform</h2>
+	<br>
+	<table style="width:80%">
+		  <tr>
+		    <th>First name </th>
+		    <th> <input type="text"        class = "form-control" name="name" id="fname"> </th>
+		  </tr> 
+		  
+		  <tr>
+		    <th>Last name</th>
+		    <th> <input type="text"        class = "form-control" name="name" id="lname"> </th>
+		  </tr>
+		  
+		  <tr>
+		    <th>Nick name</th>
+		    <th> <input type="text"        class = "form-control" name="name" id="nickname"> </th>
+		  </tr>
+		  
+		  <tr>
+		  <th>  <p id="photo_attach_text"> Your small profile picture (optional).</p> </th>
+		  
+		  <th> <form id="uploadForm" action="upload_portrait.php" method="post" enctype="multipart/form-data" target="upload_target" >
+                     <!-- <p id="f1_upload_process">Loading...<br/><img src="loader.gif" /><br/></p> -->
+                     <p id="f1_upload_form" ><br/>
+                         <label>File:  
+                              <input id="fileSelector" name="myfile" type="file" size="30" />
+                         </label>
+                     </p>
+				</form> </th>
+		  
+		  <th>  <button id="submitForm" class="btn btn-primary" > <span class="glyphicon glyphicon-open"></span> Upload photo</button> </th>
+		  <th> <canvas id='myCanvasCreateQues' hidden></canvas><br> </th>
+		  </tr>
+		  
+		  <!--  <tr>
+		    <th>Nickname in this application</th>
+		    <th> <input type="text"        class = "form-control" name="dname" id="nickname"> </th>
+		  </tr> -->
+		  
+		  <tr>
+		    <th>Year of Birth</th>
+		    <th> <input type="text"        class = "form-control" name="dname" id="YoB"> </th>
+		  </tr>
+		  
+		  <tr>
+		    <th>Gender</th>
+		    <th> <input type="radio" name="gender" value= 0 > Male<br> </th>
+			<th> <input type="radio" name="gender" value= 1 > Female<br> </th>
+		  </tr>
+		  
+		  
+		  
+		  <tr>   
+		    <th>Email *</th>
+		    <th> <input type="text"        class = "form-control" name="demail" id="email"> </th>
+		  </tr>
+		  
+		  <tr>     
+		    <th>Password *</th>
+		    <th> <input type="password"    class = "form-control"name="password" id="password"> </th>
+		  </tr>
+		    
+		  <tr>
+		    <th>Confirm password *</th>
+		    <th> <input type="password"    class = "form-control"name="cpassword" id="cpassword"> </th>
+		  </tr>  
+	</table>
+	
+	<br>
+	<!-- <p> Please sign the consent form <a target="_blank" href="consent_form.html">here</a>  </p>  -->
+
+	
+	<br>
+	<input type="button" class="btn btn-primary" name="register" id="register" value="Register">
+	<input type="button" class="btn btn-danger" name="cancel" id="cancel" value="Cancel registration">
+	
+	
+	
+	
+</div>
+
+<div class="col-lg-1"></div>
+
+</div>
+</body>
+</html>
+

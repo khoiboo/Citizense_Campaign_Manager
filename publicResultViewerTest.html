@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- Include JS File Here -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+<style type="text/css">
+
+body, html {
+  margin: 0;  
+  height:100%;
+}
+
+	.tablestyle{
+		/*width:100%;*/ 
+		border-collapse:collapse; 
+	}
+	.tablestyle td{ 
+		padding:7px; border:#4e95f4 1px solid;
+	}
+	/*  Define the background color for all the ODD background rows  */
+	.tablestyle tr:nth-child(odd){ 
+		background: #b8d1f3;
+	}
+	/*  Define the background color for all the EVEN background rows  */
+	.tablestyle tr:nth-child(even){
+		background: #dae5f4;
+	}
+	.highlight
+	{
+		background:red;
+	}
+	
+	.highlighthover
+	{
+		background:  #26cd77 ;
+	}
+	
+	#dvTable{
+  height:100%;
+  overflow-y: scroll; 
+	}
+	
+</style>
+
+<script type="text/javascript">
+
+$( document ).ready(function() {
+	
+	var array = [];
+	var array_CampaignContent = [];
+	var selection = '';
+	
+	var userID = sessionStorage.getItem('username');
+	console.log('UserID is ' + userID);
+	
+	function recursiveGetProp(obj, lookup, callback) {
+	    for (property in obj) {
+	        if (property == lookup) {
+	            callback(obj[property]);
+	        } else if (obj[property] instanceof Object) {
+	            recursiveGetProp(obj[property], lookup, callback);
+	        }
+	    }
+	}
+	
+	var authorFirstName;
+	var authorLinkPic;
+		
+	
+	
+	$('[data-toggle="Edit-tooltip"]').tooltip();
+	$('[data-toggle="Delete-tooltip"]').tooltip();
+	$('[data-toggle="View-tooltip"]').tooltip();
+	$('[data-toggle="Result-tooltip"]').tooltip();
+	
+	$.post(			                
+            "readPublicCampaign.php",
+            { 
+            	data: userID			                  
+            },
+            function(data) {
+               
+               //loalert(data); 
+               console.log(data);
+               
+               var Jobj = JSON.parse(data);              
+               
+			   /*
+               recursiveGetProp(Jobj, 'campaign_ID', function(obj) 
+            	{							
+					array.push(obj);
+				});
+				*/
+				
+				recursiveGetProp(Jobj, 'campaign_Config', function(obj) 
+            	{							
+					array_CampaignContent.push( obj );
+				});
+				
+				//alert('Size of array is ' + array_CampaignContent.length);
+				
+				for (var j=0; j < array_CampaignContent.length; j++)
+				{
+					var camObj = JSON.parse( array_CampaignContent[j] );
+					if ( camObj.showResult == 'true' )
+					{
+						array.push( camObj.Campaign_ID );
+					}
+				}
+				
+				//alert( JSON.stringify(array) );
+               
+               //alert('Size of array is ' + array.length);
+               console.log('Inside post, content of array is ' + JSON.stringify(array));               
+               sessionStorage.array = JSON.stringify(array);               
+               
+								
+					            var cam_list = [];
+					            cam_list.push(["List of publicly available campaigns"]);
+								
+								var stringAllName = "List of publicly available campaigns";
+								
+								//alert('Size of cam_list is ' + cam_list.length + ' and content is ' + JSON.stringify(cam_list) );
+					            for (var i=0;i< array.length;i++)
+					            	  {
+											if ( array[i].includes("Graffiti en Castellón / Graffiti in Castellón") )
+											{
+												
+												if ( !stringAllName.includes("Graffiti en Castellón / Graffiti in Castellón") )
+												{
+														cam_list.push([array[i]]);
+														stringAllName = stringAllName.concat( array[i] );
+												}												
+											}
+											else if ( array[i].includes("Mejora tu ciudad con tu información. / Improve our city with your information") )
+											{
+												
+												if ( !stringAllName.includes("Mejora tu ciudad con tu información. / Improve our city with your information") )
+												{
+														cam_list.push([array[i]]);
+														stringAllName = stringAllName.concat( array[i] );
+												}												
+											}
+											else if ( array[i].includes("Mejora de la red Wifi Universitaria / Improve the Univeristy WiFi network") )
+											{
+												
+												if ( !stringAllName.includes("Mejora de la red Wifi Universitaria / Improve the Univeristy WiFi network") )
+												{
+														cam_list.push([array[i]]);
+														stringAllName = stringAllName.concat( array[i] );
+												}												
+											}
+											else if ( array[i].includes("Participacion ciudadana / Citizen participation") )
+											{
+												
+												if ( !stringAllName.includes("Participacion ciudadana / Citizen participation") )
+												{
+														cam_list.push([array[i]]);
+														stringAllName = stringAllName.concat( array[i] );
+												}												
+											}
+											else if ( array[i].includes("23-Oct Animales de la calle / Street animals in the city") )
+											{
+												
+												if ( !stringAllName.includes("23-Oct Animales de la calle / Street animals in the city") )
+												{
+														cam_list.push([array[i]]);
+														stringAllName = stringAllName.concat( array[i] );
+												}												
+											}
+											else
+											{
+												cam_list.push([array[i]]);
+												stringAllName = stringAllName.concat( array[i] );
+											}							
+											
+											
+					            	   		
+					            	  }
+									  
+									  
+									  
+								$('#dvTable').append(" <h3>Welcome everyone !!</h3> <br>");
+								$('#dvTable').append(" <h5>Here you can view the results of the public campaigns. Just select a campaign and click the button on the right side to view its results..</h5>");
+								
+					            //Create a HTML Table element.
+					       	    var table = document.createElement("TABLE");
+					            table.setAttribute("id","mytable");
+					            table.setAttribute("class", "tablestyle");
+					       	    table.border = "1";
+					       	 
+					       	    //Get the count of columns.
+					       	    var columnCount = cam_list[0].length;
+					       	 
+					       	    //Add the header row.
+					       	    var row = table.insertRow(-1);
+					       	    for (var i = 0; i < columnCount; i++) {
+					       	        var headerCell = document.createElement("TH");
+					       	        headerCell.innerHTML = cam_list[0][i];
+					       	        row.appendChild(headerCell);
+					       	    }
+					       	 
+					       	    //Add the data rows.
+					       	    for (var i = 1; i < cam_list.length; i++) {
+					       	        row = table.insertRow(-1);
+					       	        for (var j = 0; j < columnCount; j++) {
+					       	            var cell = row.insertCell(-1);
+					       	            cell.innerHTML = cam_list[i][j];
+					       	        }
+					       	    }
+					       	 
+					       	    var dvTable = document.getElementById("dvTable");
+					       	    //dvTable.innerHTML = "";
+					       	    dvTable.appendChild(table);	
+					       	    
+					       	    $('td').addClass('abc');
+					       	    
+					       	 $(function () {
+					     		$('td').click(function() {
+					     			$('.abc').removeClass('highlight');
+					     			$('.abc').removeClass('highlighthover');
+					     			$(this).toggleClass('highlight');					     			
+					     			
+					     		});
+					     	});
+					       	 
+					       	$(function () {
+					     		$('td').mouseenter(function() {
+					     			$('.abc').removeClass('highlighthover');
+					     			$(this).toggleClass('highlighthover');					     			
+					     			
+					     		});
+					     	});
+					       	$(function () {
+					     		$('td').mouseleave(function() {
+					     			$('.abc').removeClass('highlighthover');
+					     			//$(this).toggleClass('highlighthover');
+					     			$('#middle').empty();
+					     			
+					     		});
+					     	});
+					       	    
+					       	    
+					       	   
+					       	 function addRowHandlers() {
+					     	    var table = document.getElementById("mytable");
+					     	    var rows = table.getElementsByTagName("tr");
+					     	    for (i = 0; i < rows.length; i++) {
+					     	        var currentRow = table.rows[i];
+					     	        var createClickHandler = 
+					     	            function(row) 
+					     	            {
+					     	                return function() { 
+					     	                						$('#middle').empty();
+					     	                                        var cell = row.getElementsByTagName("td")[0];
+					     	                                        var id = cell.innerHTML;
+					     	                                        console.log("You have selected " + id);
+					     	                                        selection = id;
+					     	                                        
+					     	                                       $.post(			                
+					     	  								            "readStatistics.php",
+					     	  								            { 
+					     	  								            	data: selection 			                  
+					     	  								            },
+					     	  								            function(data) {  
+					     	  								            	
+					     	  								            	//alert(data);
+					     	  								            	var Jobj = JSON.parse(data); 
+					     	  								            	var submit;
+					     	  								            	var download;
+					     	  								            	recursiveGetProp(Jobj, 'submit', function(obj) 
+					     	  									            		   {											
+					     	  																submit = obj;										
+					     	  														    });
+					     	  								            	recursiveGetProp(Jobj, 'download', function(obj) 
+					     	  									            		   {											
+					     	  																download = obj;										
+					     	  														    });
+					     	  								            	console.log('For this campaign, download is ' + download + ' and submit is ' + submit);
+					     	  								            	//alert('For this campaign, download is ' + download + ' and submit is ' + submit);
+					     	  								            	$('<br><br>').text('').appendTo('#middle');
+					     	  								            	$('<p></p>').text('For this campaign, download is ' + download + ' and submit is ' + submit).appendTo('#middle');
+					     	  								            }
+					     	  								         );
+					     	                                        
+					     	                                 };
+					     	            };
+
+					     	        currentRow.onclick = createClickHandler(currentRow);
+					     	    }
+					     	}
+					     	window.onload = addRowHandlers();
+					     	
+                              
+            }
+         );	
+	
+	console.log('Out of post, content of array is ' + JSON.stringify(array));
+	
+	
+	
+	
+	
+		
+	
+	
+	$('#detailStatistics').on('click', function(e)     
+			{   	
+				console.log('Will view detailed Statistics of  ' + selection);
+				
+				var stringAllName = "Graffiti en Castellón / Graffiti in Castellón Mejora tu ciudad con tu información. / Improve our city with your information" 
+				+ "Mejora de la red Wifi Universitaria / Improve the Univeristy WiFi network Participacion ciudadana / Citizen participation"
+				+ "23-Oct Animales de la calle / Street animals in the city";
+				
+				var cam1 = "Graffiti en Castellón / Graffiti in Castellón";
+				var cam2 = "Mejora tu ciudad con tu información. / Improve our city with your information";
+				var cam3 = "Mejora de la red Wifi Universitaria / Improve the Univeristy WiFi network";
+				var cam4 = "Participacion ciudadana / Citizen participation";
+				var	cam5 = "23-Oct Animales de la calle / Street animals in the city";
+				var specialCampaign = [cam1, cam2, cam3, cam4, cam5];
+				
+				var answerArray = [];
+				
+				
+				
+				for (var i=0; i < specialCampaign.length; i++)
+				{
+					if ( selection.includes( specialCampaign[i] ) )
+					{
+						var resultJob1, resultJob2, resultJob3, resultJob4;
+					
+						var job1 = $.post(			                
+							"readDetailStatisticsTest.php",
+							{	data: specialCampaign[i] + ' (1)'},
+							function(data) {	resultJob1 = data;	}
+						 );
+						 var job2 = $.post(			                
+							"readDetailStatisticsTest.php",
+							{	data: specialCampaign[i] + ' (2)'},
+							function(data) {	resultJob2 = data;	}
+						 );
+						 var job3 = $.post(			                
+							"readDetailStatisticsTest.php",
+							{	data: specialCampaign[i] + ' (3)'},
+							function(data) {	resultJob3 = data;	}
+						 );
+						 var job4 = $.post(			                
+							"readDetailStatisticsTest.php",
+							{	data: specialCampaign[i] + ' (4)'},
+							function(data) {	resultJob4 = data;	}
+						 );
+						 
+						 $.when(job1, job2, job3, job4).done(function(result1, result2) 
+						{
+							var Jobj = JSON.parse(resultJob1);
+							recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+								{	answerArray.push(obj); });
+								
+							Jobj = JSON.parse(resultJob2);
+							recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+								{	answerArray.push(obj); });
+								
+							Jobj = JSON.parse(resultJob3);
+							recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+								{	answerArray.push(obj); });
+								
+							Jobj = JSON.parse(resultJob4);
+							recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+								{	answerArray.push(obj); });
+								
+							sessionStorage.answerArray = JSON.stringify(answerArray);
+							sessionStorage.selection = selection;
+							window.location.href = "detailedStatistics_PublicTest.html";				
+						});
+						
+					}
+				}
+				
+				function commonTask( shortName)
+				{
+					var resultJob1, resultJob2, resultJob3, resultJob4;
+					
+					var job1 = $.post(			                
+			            "readDetailStatisticsTest.php",
+			            {	data: shortName + ' (1)'},
+			            function(data) {	resultJob1 = data;	}
+			         );
+					 var job2 = $.post(			                
+			            "readDetailStatisticsTest.php",
+			            {	data: shortName + ' (2)'},
+			            function(data) {	resultJob2 = data;	}
+			         );
+					 var job3 = $.post(			                
+			            "readDetailStatisticsTest.php",
+			            {	data: shortName + ' (3)'},
+			            function(data) {	resultJob3 = data;	}
+			         );
+					 var job4 = $.post(			                
+			            "readDetailStatisticsTest.php",
+			            {	data: shortName + ' (4)'},
+			            function(data) {	resultJob4 = data;	}
+			         );
+					 
+					 $.when(job1, job2, job3, job4).done(function(result1, result2) 
+					{
+						var Jobj = JSON.parse(resultJob1);
+						recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {	answerArray.push(obj); });
+							
+						Jobj = JSON.parse(resultJob2);
+						recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {	answerArray.push(obj); });
+							
+						Jobj = JSON.parse(resultJob3);
+						recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {	answerArray.push(obj); });
+							
+						Jobj = JSON.parse(resultJob4);
+						recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {	answerArray.push(obj); });
+							
+						sessionStorage.answerArray = JSON.stringify(answerArray);
+			            sessionStorage.selection = selection;
+			            window.location.href = "detailedStatistics_PublicTest.html";				
+					});
+					 
+				}
+				
+				if ( selection.includes("Graffiti en Castellón / Graffiti in Castellón") )
+				{
+				/*
+					var resultJob1, resultJob2, resultJob3, resultJob4;
+					
+					var job1 = $.post(			                
+			            "readDetailStatisticsTest.php",
+			            {	data: 'Graffiti en Castellón / Graffiti in Castellón (1)'},
+			            function(data) {	resultJob1 = data;	}
+			         );
+					 var job2 = $.post(			                
+			            "readDetailStatisticsTest.php",
+			            {	data: 'Graffiti en Castellón / Graffiti in Castellón (2)'},
+			            function(data) {	resultJob2 = data;	}
+			         );
+					 var job3 = $.post(			                
+			            "readDetailStatisticsTest.php",
+			            {	data: 'Graffiti en Castellón / Graffiti in Castellón (3)'},
+			            function(data) {	resultJob3 = data;	}
+			         );
+					 var job4 = $.post(			                
+			            "readDetailStatisticsTest.php",
+			            {	data: 'Graffiti en Castellón / Graffiti in Castellón (4)'},
+			            function(data) {	resultJob4 = data;	}
+			         );
+					 
+					$.when(job1, job2, job3, job4).done(function(result1, result2) 
+					{
+						var Jobj = JSON.parse(resultJob1);
+						recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {	answerArray.push(obj); });
+							
+						Jobj = JSON.parse(resultJob2);
+						recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {	answerArray.push(obj); });
+							
+						Jobj = JSON.parse(resultJob3);
+						recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {	answerArray.push(obj); });
+							
+						Jobj = JSON.parse(resultJob4);
+						recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {	answerArray.push(obj); });
+							
+						sessionStorage.answerArray = JSON.stringify(answerArray);
+			            sessionStorage.selection = selection;
+			            window.location.href = "detailedStatistics_PublicTest.html";				
+					});
+					*/
+				}
+				else if ( selection.includes("Mejora tu ciudad con tu información. / Improve our city with your information") )
+				{
+				}
+				else if ( selection.includes("Mejora de la red Wifi Universitaria / Improve the Univeristy WiFi network") )
+				{
+				}
+				else if ( selection.includes("Participacion ciudadana / Citizen participation") )
+				{
+				}
+				else if ( selection.includes("23-Oct Animales de la calle / Street animals in the city") )
+				{
+				}
+				else
+				{
+					$.post(			                
+			            "readDetailStatisticsTest.php",
+			            { 
+			            	data: selection 			                  
+			            },
+			            function(data) {  	            	
+			            	
+			            	var Jobj = JSON.parse(data); 
+			            	answerArray = [];
+			            	
+			            	recursiveGetProp(Jobj, 'submissionContent', function(obj) 
+				            {											
+			            		answerArray.push(obj);									
+							});
+										
+			            	sessionStorage.answerArray = JSON.stringify(answerArray);
+			            	sessionStorage.selection = selection;
+			            	window.location.href = "detailedStatistics_Public.html";			            	
+			            }
+			         );
+				}
+				
+				
+			});	
+			
+		function deleteCampaign(selection)
+		{
+			console.log('Will delete ' + selection);
+				
+				if (selection != '')
+				{
+					$.post(			                
+			            "deleteCampaign.php",
+			            { 
+			            	data: selection 			                  
+			            },
+			            function(data) {  
+			            	
+			            	//alert(data);
+			            	location.reload(true);			               			                              
+			            }
+			         );
+				}
+		}
+
+		
+			
+		$('#feedback').on('click', function(e)     
+		{			
+			window.location.href = "feedback.html";			            			
+		}); 
+			
+		$('#logout').on('click', function(e)     
+		{
+			console.log('LOG OUT NOW');
+			sessionStorage.setItem('username', null);
+			localStorage.clear();
+			sessionStorage.clear();
+			window.location.href = "welcome.html";			            	
+		
+		}); 
+  
+});
+</script>
+
+</head>
+
+<body>
+
+<br><br><br>
+ <!--Nav-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="background: #4c8dc7;">
+    <div class="container">
+        <div class="navbar-header">
+            <!--Part of left-->
+            
+            <div id="stepsUserAuth">
+                <a class="navbar-brand" href="" title="NavApps">
+                    <img src="transparentCitizense.png" alt="Geo-C" height="30px" style="display: inline">
+                    
+                </a>
+            <span class="navbar-brand steps">
+                
+                
+                
+            </span>
+            </div>
+            
+        </div>
+        <!--Part of right-->
+        <div id="navbar" class="navbar-collapse collapse">
+		
+		<form class="navbar-form navbar-right">
+                <!--If the person authenticate in web page these button won't appear-->
+                <div id="loginButtonsUserNoAuth">                    
+                    
+                    <!-- <button type="button" name="logout" class="btn btn-danger" id="logout">    Log out   </button> -->
+                    
+                </div>
+                <!--If the person authenticate in web page these button will appear-->
+                <div id="welcomeButtonsUserAuth">
+                    <span style="color: white" id="nameSurnameLoggedUserAuth">
+                        <!--Name of user, name and surname of the login user loaded from JS-->
+                    </span>
+                </div>                
+        </form>
+
+            
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>
+
+
+
+<div>
+    <!-- <button id="edit">Edit</button> -->
+    <!-- <button id="create">Create</button> -->
+    
+</div>
+
+<div id="dvTable" class="col-lg-4">
+
+<br>
+
+</div>
+
+<div id="middle" class="col-lg-4">
+
+
+
+<br><br>
+
+</div>
+
+<div  class="col-lg-4">
+
+
+<button id="detailStatistics" class="btn btn-info" data-toggle="Result-tooltip" title="Click on a campaign in the list to select, then click this button to see the results of the campaign">  View results of campaign</button>
+
+<br><br>
+
+<p> You can always create and launch your own campaigns like the ones here. Just register and log in <a href="/"><b>the home page</b></a>, you are minutes away from having your own campaigns. </p>
+
+<p> Authors of the best campaigns will get rewards (each of 25€ in value) from this experiments </p>
+
+
+
+<br>
+
+</div>
+
+
+<br>
+
+
+
+</body>
+
+
+</html>
